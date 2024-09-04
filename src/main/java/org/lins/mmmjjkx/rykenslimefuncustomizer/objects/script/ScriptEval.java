@@ -134,7 +134,7 @@ public abstract class ScriptEval {
             int[] arr = stream.toArray();
             return arr[random.nextInt(arr.length)];
         });
-
+      
         addThing("runLater", (BiConsumer<Runnable, Long>) (r, l) -> Bukkit.getScheduler().runTaskLater(RykenSlimefunCustomizer.INSTANCE, r, l));
         addThing("runRepeating", (CiConsumer<Runnable, Long, Long>) (r, l, t) -> Bukkit.getScheduler().runTaskTimer(RykenSlimefunCustomizer.INSTANCE, r, l, t));
         addThing("runAsync", (Consumer<Runnable>) r -> Bukkit.getScheduler().runTaskAsynchronously(RykenSlimefunCustomizer.INSTANCE, r));
