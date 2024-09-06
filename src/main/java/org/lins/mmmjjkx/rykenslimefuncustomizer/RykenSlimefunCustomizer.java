@@ -143,17 +143,17 @@ public final class RykenSlimefunCustomizer extends JavaPlugin implements Slimefu
                 .version("75.1")
                 .build();
         Library httpCore = Library.builder()
-                .groupId("org{}apache{}httpcomponents.core5")
+                .groupId("org{}apache{}httpcomponents{}core5")
                 .artifactId("httpcore5")
-                .version("5.3.1")
+                .version("5.2.5")
                 .build();
         Library httpCore_h2 = Library.builder()
-                .groupId("org{}apache{}httpcomponents.core5")
+                .groupId("org{}apache{}httpcomponents{}core5")
                 .artifactId("httpcore5-h2")
-                .version("5.3.1")
+                .version("5.2.5")
                 .build();
         Library httpClient = Library.builder()
-                .groupId("org{}apache{}httpcomponents.client5")
+                .groupId("org{}apache{}httpcomponents{}client5")
                 .artifactId("httpclient5")
                 .version("5.3.1")
                 .build();

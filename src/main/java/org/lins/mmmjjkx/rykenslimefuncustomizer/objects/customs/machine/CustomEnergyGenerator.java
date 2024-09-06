@@ -1,11 +1,11 @@
 package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine;
 
-import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.EnergyNetProvider;
 import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponentType;
+import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public class CustomEnergyGenerator extends CustomMachine implements EnergyNetPro
     }
 
     @Override
-    public int getGeneratedOutput(@NotNull Location l, @NotNull SlimefunBlockData data) {
+    public int getGeneratedOutput(@NotNull Location l, @NotNull Config data) {
         if (eval == null) {
             return defaultOutput;
         } else {
@@ -38,7 +38,7 @@ public class CustomEnergyGenerator extends CustomMachine implements EnergyNetPro
                 if (result instanceof Integer i) {
                     return i;
                 } else {
-                    ExceptionHandler.handleWarning("getGeneratedOutput() 返回了一个非整数值: " + result + " 导致自定义发电机的默认输出值将被使用， 请找附属对应作者修复此问题！");
+                    ExceptionHandler.handleWarning("getGeneratedOutput() returned a non integer value: "+result+" causing the default output value of the custom generator to be used. Please contact the corresponding author to fix this issue!");
                     return defaultOutput;
                 }
             } catch (Exception e) {
