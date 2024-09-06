@@ -11,21 +11,21 @@ import java.nio.file.Files;
 import java.security.Permission;
 import java.security.Permissions;
 import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.IntStream;
 import lombok.AccessLevel;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.graalvm.polyglot.HostAccess;
 import org.jetbrains.annotations.Nullable;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.RykenSlimefunCustomizer;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.libraries.colors.CMIChatColor;
+import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.ProjectAddon;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.enhanced.NBTAPIIntegration;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.lambda.CiConsumer;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.lambda.CiFunction;
@@ -62,10 +62,12 @@ public abstract class ScriptEval {
             .build();
 
     private final File file;
+    private final ProjectAddon addon;
     private String fileContext;
 
-    public ScriptEval(File file) {
+    public ScriptEval(File file, ProjectAddon addon) {
         this.file = file;
+        this.addon = addon;
 
         contextInit();
     }
@@ -140,6 +142,10 @@ public abstract class ScriptEval {
         addThing("runAsync", (Consumer<Function<?, ?>>) r -> Bukkit.getScheduler().runTaskAsynchronously(RykenSlimefunCustomizer.INSTANCE, () -> r.apply(null)));
         addThing("runLaterAsync", (BiConsumer<Function<?, ?>, Integer>) (r, l) -> Bukkit.getScheduler().runTaskLaterAsynchronously(RykenSlimefunCustomizer.INSTANCE, () -> r.apply(null), l));
         addThing("runRepeatingAsync", (CiConsumer<Function<?, ?>, Integer, Integer>) (r, l, t) -> Bukkit.getScheduler().runTaskTimerAsynchronously(RykenSlimefunCustomizer.INSTANCE, () -> r.apply(null), l, t));
+
+        if (addon.getConfig() != null) {
+            addThing("getAddonConfig", (Supplier<YamlConfiguration>) addon.getConfig()::config);
+        }
 
         if (Bukkit.getPluginManager().isPluginEnabled("NBTAPI")) {
             addThing("NBTAPI", NBTAPIIntegration.instance);

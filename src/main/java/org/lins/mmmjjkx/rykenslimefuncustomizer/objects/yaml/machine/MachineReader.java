@@ -16,6 +16,7 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.RykenSlimefunCustomizer;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.bulit_in.JavaScriptEval;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.ProjectAddon;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomMenu;
+import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine.CustomEnergyGenerator;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine.CustomMachine;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine.CustomNoEnergyMachine;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.parent.AbstractEmptyMachine;
@@ -73,6 +74,16 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
         CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(s));
 
         AbstractEmptyMachine<?> machine;
+        CustomNoEnergyMachine defaultNoEnergyMachine = new CustomNoEnergyMachine(
+                group.getSecondValue(),
+                slimefunItemStack,
+                rt.getSecondValue(),
+                recipe,
+                menu,
+                input,
+                output,
+                eval,
+                -1);
 
         if (section.contains("energy")) {
             ConfigurationSection energySettings = section.getConfigurationSection("energy");
@@ -80,34 +91,14 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
                 ExceptionHandler.handleWarning(
                         "There was an error while loading machine " + s + " in addon " + addon.getAddonId() + ": "
                                 + "Could not find energy settings! The machine will be treated as a no-energy machine.");
-                machine = new CustomNoEnergyMachine(
-                        group.getSecondValue(),
-                        slimefunItemStack,
-                        rt.getSecondValue(),
-                        recipe,
-                        menu,
-                        input,
-                        output,
-                        eval,
-                        -1);
-                return machine;
+                return defaultNoEnergyMachine;
             }
             int capacity = energySettings.getInt("capacity");
             if (capacity < 0) {
                 ExceptionHandler.handleError(
                         "There was an error while loading machine " + s + " in addon " + addon.getAddonId() + ": "
                                 + "Capacity cannot be negative! The machine will be treated as a no-energy machine.");
-                machine = new CustomNoEnergyMachine(
-                        group.getSecondValue(),
-                        slimefunItemStack,
-                        rt.getSecondValue(),
-                        recipe,
-                        menu,
-                        input,
-                        output,
-                        eval,
-                        -1);
-                return machine;
+                return defaultNoEnergyMachine;
             }
             MachineRecord record = new MachineRecord(capacity);
             String encType = energySettings.getString("type");
@@ -118,7 +109,41 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
                     EnergyNetComponentType.class,
                     encType);
             if (enc.getFirstValue() == ExceptionHandler.HandleResult.FAILED) {
-                machine = new CustomNoEnergyMachine(
+                return defaultNoEnergyMachine;
+            }
+
+            if (section.contains("energyOutput")) {
+                int energyOutput = section.getInt("energyOutput");
+                if (energyOutput < 0) {
+                    ExceptionHandler.handleError("Found an error while loading custom energy generator " + s + "in addon " + addon.getAddonId() + ": The energy output cannot be negative! The machine will be treated as simple energy machine.");
+                    machine = new CustomMachine(
+                            group.getSecondValue(),
+                            slimefunItemStack,
+                            rt.getSecondValue(),
+                            recipe,
+                            menu,
+                            input,
+                            output,
+                            record,
+                            enc.getSecondValue(),
+                            eval);
+                    return machine;
+                } else {
+                    machine = new CustomEnergyGenerator(
+                            group.getSecondValue(),
+                            slimefunItemStack,
+                            rt.getSecondValue(),
+                            recipe,
+                            menu,
+                            input,
+                            output,
+                            record,
+                            enc.getSecondValue(),
+                            eval,
+                            energyOutput);
+                }
+            } else {
+                machine = new CustomMachine(
                         group.getSecondValue(),
                         slimefunItemStack,
                         rt.getSecondValue(),
@@ -126,21 +151,10 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
                         menu,
                         input,
                         output,
-                        eval,
-                        -1);
-                return machine;
+                        record,
+                        enc.getSecondValue(),
+                        eval);
             }
-            machine = new CustomMachine(
-                    group.getSecondValue(),
-                    slimefunItemStack,
-                    rt.getSecondValue(),
-                    recipe,
-                    menu,
-                    input,
-                    output,
-                    record,
-                    enc.getSecondValue(),
-                    eval);
         } else {
             List<Integer> workSlots = new ArrayList<>();
             if (section.isInt("work")) {

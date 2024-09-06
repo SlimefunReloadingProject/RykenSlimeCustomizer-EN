@@ -74,7 +74,7 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
         this.menu = menu;
 
         if (eval != null) {
-            eval.addThing("setWorking", (Consumer<Boolean>) this::setWorking);
+            eval.addThing("setWorking", (Consumer<Boolean>) b -> eval.addThing("working", b));
             eval.addThing("working", false);
 
             eval.doInit();
@@ -115,9 +115,6 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
             createPreset(this, menu::apply);
         }
     }
-
-    @Setter
-    private boolean working = false;
 
     @Override
     public void preRegister() {

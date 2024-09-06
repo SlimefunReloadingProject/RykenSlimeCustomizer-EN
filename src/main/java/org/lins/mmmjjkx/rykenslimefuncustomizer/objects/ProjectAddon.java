@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.bulit_in.JavaScriptEval;
+import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomAddonConfig;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomMenu;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.item.CustomArmorPiece;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.item.CustomFood;
@@ -53,8 +54,9 @@ public final class ProjectAddon {
     private @Nullable String githubRepo;
     private @Nullable String downloadZipName;
     //
-    private List<JavaScriptEval> scriptEvals = new ArrayList<>();
+    private @Nullable CustomAddonConfig config;
     //
+    private List<JavaScriptEval> scriptEvals = new ArrayList<>();
     // groups.yml
     private List<ItemGroup> itemGroups = new ArrayList<>();
     // menus.yml
@@ -142,7 +144,6 @@ public final class ProjectAddon {
 
         // scripts.clear();
         scriptEvals.clear();
-        researches.clear();
         items.clear();
         machines.clear();
         itemGroups.clear();
