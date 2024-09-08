@@ -126,7 +126,7 @@ public class ProjectAddonLoader {
                     ScriptableListeners.addScriptableListener(id, listener);
                 } else {
                     ExceptionHandler.handleWarning(
-                            "无法找到附属 " + addon.getAddonId() + " 的对应监听脚本文件 " + file.getName() + "！");
+                            "Cannot find the script listener file " + scriptListener + ".js for addon " + addon.getAddonId() + "!");
                 }
             }
 
@@ -145,7 +145,7 @@ public class ProjectAddonLoader {
                         Files.copy(configFile.toPath(), customConfig.toPath());
                         customConfigYaml = doFileLoad(customConfigFolder, "config.yml");
                     } catch (IOException e) {
-                        ExceptionHandler.handleError("无法复制配置文件 " + configFile.getName() + " 到 " + customConfigFolder.getName() + "，附属可能不按预期工作！", e);
+                        ExceptionHandler.handleError("Cannot copy " + configFile.getName() + " to " + customConfigFolder.getName() + ", the addon may not work properly!", e);
                     }
                 }
 
