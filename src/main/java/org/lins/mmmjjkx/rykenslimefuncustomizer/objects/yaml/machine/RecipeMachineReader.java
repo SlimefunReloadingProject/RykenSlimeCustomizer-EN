@@ -92,6 +92,8 @@ public class RecipeMachineReader extends YamlReader<CustomRecipeMachine> {
             return null;
         }
 
+        boolean hideAllRecipes = section.getBoolean("hideAllRecipes", false);
+
         List<CustomMachineRecipe> mr = readRecipes(s, input.size(), output.size(), recipes, addon);
 
         return new CustomRecipeMachine(
@@ -105,7 +107,8 @@ public class RecipeMachineReader extends YamlReader<CustomRecipeMachine> {
                 energy,
                 capacity,
                 menu,
-                speed);
+                speed,
+                hideAllRecipes);
     }
 
     @Override
@@ -183,11 +186,12 @@ public class RecipeMachineReader extends YamlReader<CustomRecipeMachine> {
 
             boolean chooseOne = recipes.getBoolean("chooseOne", false);
             boolean forDisplay = recipes.getBoolean("forDisplay", false);
+            boolean hide = recipes.getBoolean("hide", false);
 
             input = CommonUtils.removeNulls(input);
             output = CommonUtils.removeNulls(output);
 
-            list.add(new CustomMachineRecipe(seconds, input, output, chances, chooseOne, forDisplay));
+            list.add(new CustomMachineRecipe(seconds, input, output, chances, chooseOne, forDisplay, hide));
         }
         return list;
     }
