@@ -105,19 +105,6 @@ public class CommonUtils {
         ItemStack itemStack;
 
         switch (type.toLowerCase()) {
-            default -> {
-                Optional<Material> materialo = Optional.ofNullable(Material.matchMaterial(material));
-                Material mat;
-                if (materialo.isEmpty()) {
-                    ExceptionHandler.handleError("Cannot find material " + material + " in a addon called "
-                            + addon.getAddonId() + ", using stone instead");
-                    mat = Material.STONE;
-                } else {
-                    mat = materialo.get();
-                }
-
-                itemStack = new CustomItemStack(mat, name, lore);
-            }
             case "none" -> {
                 return new ItemStack(Material.AIR, 1);
             }
@@ -215,6 +202,18 @@ public class CommonUtils {
                 if (itemStack.getAmount() > 1 && !countable) {
                     itemStack.setAmount(1);
                 }
+            }
+            default -> {
+                Optional<Material> materialo = Optional.ofNullable(Material.matchMaterial(material));
+                Material mat;
+                if (materialo.isEmpty()) {
+                    ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取材料" + material + "，已转为石头");
+                    mat = Material.STONE;
+                } else {
+                    mat = materialo.get();
+                }
+
+                itemStack = new CustomItemStack(mat, name, lore);
             }
         }
 
