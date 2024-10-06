@@ -184,7 +184,7 @@ public class SuperReader extends YamlReader<SlimefunItem> {
                     + addon.getAddonId() + ": " + "The item is null or has an invalid format");
             return null;
         }
-        return List.of(new SlimefunItemStack(s, stack));
+        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
     }
 
     private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {

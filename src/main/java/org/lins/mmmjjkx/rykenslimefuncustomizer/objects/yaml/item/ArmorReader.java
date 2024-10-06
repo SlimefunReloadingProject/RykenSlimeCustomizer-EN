@@ -146,7 +146,7 @@ public class ArmorReader extends YamlReader<List<CustomArmorPiece>> {
                 continue;
             }
 
-            SlimefunItemStack sfis = new SlimefunItemStack(id, stack);
+            SlimefunItemStack sfis = new SlimefunItemStack(id.toUpperCase(), stack);
             items.add(sfis);
         }
 

@@ -219,6 +219,6 @@ public class TemplateMachineReader extends YamlReader<CustomTemplateMachine> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(s, stack));
+        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
     }
 }

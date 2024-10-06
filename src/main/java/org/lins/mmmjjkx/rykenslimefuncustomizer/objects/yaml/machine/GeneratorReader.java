@@ -93,7 +93,7 @@ public class GeneratorReader extends YamlReader<CustomGenerator> {
                     + addon.getAddonId() + ": " + "The item is null or has an invalid format");
             return null;
         }
-        return List.of(new SlimefunItemStack(id, stack));
+        return List.of(new SlimefunItemStack(id.toUpperCase(), stack));
     }
 
     private List<MachineFuel> readFuels(String s, ConfigurationSection section, ProjectAddon addon) {

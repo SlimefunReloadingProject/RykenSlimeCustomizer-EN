@@ -87,6 +87,6 @@ public class CapacitorsReader extends YamlReader<Capacitor> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(id, stack));
+        return List.of(new SlimefunItemStack(id.toUpperCase(), stack));
     }
 }

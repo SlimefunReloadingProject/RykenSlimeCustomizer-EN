@@ -193,6 +193,6 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(s, stack));
+        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
     }
 }

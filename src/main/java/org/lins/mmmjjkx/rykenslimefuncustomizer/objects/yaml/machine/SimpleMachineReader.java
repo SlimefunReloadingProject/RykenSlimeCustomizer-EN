@@ -159,7 +159,7 @@ public class SimpleMachineReader extends YamlReader<SlimefunItem> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(s, stack));
+        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
     }
 
     private boolean isAccelerator(SimpleMachineType type) {
