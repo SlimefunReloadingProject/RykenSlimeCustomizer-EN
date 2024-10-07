@@ -251,8 +251,8 @@ public class ItemReader extends YamlReader<SlimefunItem> {
     }
 
     @Override
-    public List<SlimefunItemStack> preloadItems(String id) {
-        ConfigurationSection section = configuration.getConfigurationSection(id);
+    public List<SlimefunItemStack> preloadItems(String key) {
+        ConfigurationSection section = configuration.getConfigurationSection(key);
 
         if (section == null) return null;
 
@@ -264,7 +264,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(id.toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(section.getString("id_alias", key).toUpperCase(), stack));
     }
 
     @SneakyThrows

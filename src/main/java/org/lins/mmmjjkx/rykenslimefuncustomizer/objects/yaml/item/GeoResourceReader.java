@@ -152,7 +152,7 @@ public class GeoResourceReader extends YamlReader<GEOResource> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(id.toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(section.getString("id_alias", id).toUpperCase(), stack));
     }
 
     @Deprecated

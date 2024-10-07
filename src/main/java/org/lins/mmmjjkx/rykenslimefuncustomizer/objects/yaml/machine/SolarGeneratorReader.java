@@ -97,6 +97,6 @@ public class SolarGeneratorReader extends YamlReader<CustomSolarGenerator> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(section.getString("id_alias", s).toUpperCase(), stack));
     }
 }

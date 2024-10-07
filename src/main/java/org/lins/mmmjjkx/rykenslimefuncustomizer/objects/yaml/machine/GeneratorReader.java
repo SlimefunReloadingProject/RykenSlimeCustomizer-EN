@@ -51,7 +51,7 @@ public class GeneratorReader extends YamlReader<CustomGenerator> {
 
         if (rt.getFirstValue() == ExceptionHandler.HandleResult.FAILED) return null;
 
-        CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(s));
+        CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(id));
 
         List<Integer> input = section.getIntegerList("input");
         List<Integer> output = section.getIntegerList("output");
@@ -93,7 +93,7 @@ public class GeneratorReader extends YamlReader<CustomGenerator> {
                     + addon.getAddonId() + ": " + "The item is null or has an invalid format");
             return null;
         }
-        return List.of(new SlimefunItemStack(id.toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(section.getString("id_alias", id).toUpperCase(), stack));
     }
 
     private List<MachineFuel> readFuels(String s, ConfigurationSection section, ProjectAddon addon) {

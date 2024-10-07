@@ -51,7 +51,7 @@ public class MaterialGeneratorReader extends YamlReader<CustomMaterialGenerator>
 
         if (rt.getFirstValue() == ExceptionHandler.HandleResult.FAILED) return null;
 
-        CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(s));
+        CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(id));
         if (menu == null) {
             ExceptionHandler.handleError("Found an error while loading material generator " + s + " in addon "
                     + addon.getAddonId() + ": Corresponding menu does not exist!");
@@ -143,6 +143,6 @@ public class MaterialGeneratorReader extends YamlReader<CustomMaterialGenerator>
             return null;
         }
 
-        return List.of(new SlimefunItemStack(s.toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(section.getString("id_alias", s).toUpperCase(), stack));
     }
 }
