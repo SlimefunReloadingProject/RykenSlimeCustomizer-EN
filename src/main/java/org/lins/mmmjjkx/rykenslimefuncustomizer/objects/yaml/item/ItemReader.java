@@ -259,7 +259,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         ConfigurationSection item = section.getConfigurationSection("item");
         ItemStack stack = CommonUtils.readItem(item, false, addon);
         if (stack == null) {
-            ExceptionHandler.handleError("Found an error while loading item " + id + " in addon " + addon.getAddonId()
+            ExceptionHandler.handleError("Found an error while loading item " + key + " in addon " + addon.getAddonId()
                     + ": " + "The item is null or has an invalid format");
             return null;
         }
