@@ -12,7 +12,6 @@ import com.oracle.truffle.js.runtime.objects.JSAttributes;
 import com.oracle.truffle.js.runtime.objects.JSObject;
 import com.oracle.truffle.js.runtime.objects.JSObjectUtil;
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
@@ -52,7 +51,6 @@ public class JavaScriptEval extends ScriptEval {
         TruffleLanguage.Env env = realm.getEnv();
         addThing("SlimefunItems", env.asHostSymbol(SlimefunItems.class));
         addThing("SlimefunItem", env.asHostSymbol(SlimefunItem.class));
-        addThing("StorageCacheUtils", env.asHostSymbol(StorageCacheUtils.class));
         addThing("SlimefunUtils", env.asHostSymbol(SlimefunUtils.class));
         addThing("BlockMenu", env.asHostSymbol(BlockMenu.class));
 
@@ -114,7 +112,7 @@ public class JavaScriptEval extends ScriptEval {
         try {
             return jsEngine.invokeFunction(funName, args);
         } catch (ScriptException e) {
-            ExceptionHandler.handleError("在运行" + getFile().getName() + "时发生错误");
+            ExceptionHandler.handleError("An error occurred while executing script file " + getFile().getName());
             e.printStackTrace();
         } catch (NoSuchMethodException ignored) {
         }
