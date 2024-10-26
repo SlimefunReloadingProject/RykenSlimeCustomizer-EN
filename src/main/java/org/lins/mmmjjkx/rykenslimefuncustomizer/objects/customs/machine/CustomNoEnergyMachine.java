@@ -4,7 +4,9 @@ import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockPlaceHandler;
+import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.machines.MachineOperation;
 import io.github.thebusybiscuit.slimefun4.core.machines.MachineProcessor;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -83,6 +86,12 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
                 @Override
                 public void onPlayerPlace(@NotNull BlockPlaceEvent e) {
                     CustomNoEnergyMachine.this.eval.evalFunction("onPlace", e);
+                }
+            }, (BlockUseHandler) e -> CustomNoEnergyMachine.this.eval.evalFunction("onUse", e),
+            new BlockBreakHandler(false, false) {
+                @Override
+                public void onPlayerBreak(@NotNull BlockBreakEvent e, @NotNull ItemStack item, @NotNull List<ItemStack> drops) {
+                    CustomNoEnergyMachine.this.eval.evalFunction("onBreak", e, item, drops);
                 }
             });
         }

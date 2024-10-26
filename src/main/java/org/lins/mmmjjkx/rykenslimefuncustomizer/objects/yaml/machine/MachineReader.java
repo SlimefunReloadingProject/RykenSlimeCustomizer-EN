@@ -111,8 +111,8 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
             if (enc.getFirstValue() == ExceptionHandler.HandleResult.FAILED) {
                 return defaultNoEnergyMachine;
             }
-
-            if (section.contains("energyOutput")) {
+            
+            if (energySettings.contains("energyOutput")) {
                 int energyOutput = section.getInt("energyOutput");
                 if (energyOutput < 0) {
                     ExceptionHandler.handleError("Found an error while loading custom energy generator " + s + "in addon " + addon.getAddonId() + ": The energy output cannot be negative! The machine will be treated as simple energy machine.");
