@@ -62,6 +62,10 @@ public class GithubUpdater {
                     return false;
                 }
 
+                if (!downloadFolder.exists()) {
+                    downloadFolder.mkdirs();
+                }
+
                 File zip = new File(downloadFolder, prjId + "-" + releaseName + ".zip");
 
                 String zipUrl;
@@ -87,11 +91,11 @@ public class GithubUpdater {
 
                 URL urlObj = new URL(zipUrl);
 
-                if (!zip.createNewFile()) {
-                    throw new IOException("Cannot create the download file");
+                if (!zip.exists()) {
+                    if (!zip.createNewFile()) {
+                        throw new IOException("Cannot create the download file");
+                    }
                 }
-
-                zip.createNewFile();
 
                 long result = Files.copy(urlObj.openStream(), zip.toPath(), StandardCopyOption.REPLACE_EXISTING);
 

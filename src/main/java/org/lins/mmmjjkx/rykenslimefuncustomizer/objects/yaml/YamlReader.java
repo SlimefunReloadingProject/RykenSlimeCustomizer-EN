@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,6 +17,8 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 
 public abstract class YamlReader<T> {
+    public static final int MAJOR_VERSION = PaperLib.getMinecraftVersion();
+    public static final int MINOR_VERSION = PaperLib.getMinecraftPatchVersion();
     private final List<String> lateInits;
     protected final ProjectAddon addon;
     protected final YamlConfiguration configuration;
@@ -41,7 +44,7 @@ public abstract class YamlReader<T> {
 
             for (SlimefunItemStack item : items) {
                 addon.getPreloadItems().put(item.getItemId(), item);
-                ExceptionHandler.debugLog("已预加载物品: " + item.getItemId());
+                ExceptionHandler.debugLog("&a已预加载物品: " + item.getItemId());
             }
         }
     }
@@ -152,8 +155,27 @@ public abstract class YamlReader<T> {
                     continue;
                 }
 
-                int current = CommonUtils.versionToCode(Bukkit.getMinecraftVersion());
-                int destination = CommonUtils.versionToCode(splits[2]);
+                int targetMajor = 0;
+                int targetMinor = 0;
+                String[] versionSplit = splits[2].split("\\.");
+                if (versionSplit.length == 2) {
+                    try {
+                        targetMajor = Integer.parseInt(versionSplit[1]);
+                    } catch (NumberFormatException e) {
+                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        continue;
+                    }
+                } else if (versionSplit.length == 3) {
+                    try {
+                        targetMajor = Integer.parseInt(versionSplit[1]);
+                        targetMinor = Integer.parseInt(versionSplit[2]);
+                    } catch (NumberFormatException e) {
+                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        continue;
+                    }
+                } else {
+                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                }
 
                 if (!intCheck(splits[1], key, "version", current, destination, (op) -> "Needs version is " + op + splits[2] + " so that it can be registered", warn)) {
                     return false;
