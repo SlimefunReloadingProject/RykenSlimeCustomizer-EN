@@ -80,13 +80,14 @@
 
 	<repositories>
 		<repository>
-			<id>AlessioDP</id>
-			<url>https://repo.alessiodp.com/releases/</url>
-		</repository>
-		<repository>
 			<id>jitpack</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<repository>
+			<id>AlessioDP</id>
+			<url>https://repo.alessiodp.com/releases/</url>
+		</repository>
+
 		<repository>
 			<id>minebench-repo</id>
 			<url>https://repo.minebench.de/</url>
@@ -167,7 +168,7 @@
 		<dependency>
 			<groupId>com.github.Slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>master-SNAPSHOT</version>
+			<version>RC-37</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
