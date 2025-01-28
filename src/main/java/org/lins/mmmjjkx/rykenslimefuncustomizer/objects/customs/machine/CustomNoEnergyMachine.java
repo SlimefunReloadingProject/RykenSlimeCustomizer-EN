@@ -87,7 +87,7 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
                 public void onPlayerPlace(@NotNull BlockPlaceEvent e) {
                     CustomNoEnergyMachine.this.eval.evalFunction("onPlace", e);
                 }
-            }, (BlockUseHandler) e -> CustomNoEnergyMachine.this.eval.evalFunction("onUse", e),
+            }, 
             new BlockBreakHandler(false, false) {
                 @Override
                 public void onPlayerBreak(@NotNull BlockBreakEvent e, @NotNull ItemStack item, @NotNull List<ItemStack> drops) {
@@ -97,16 +97,17 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
         }
 
         addItemHandler(new ScriptedEvalBreakHandler(this, eval));
+        addItemHandler(getBlockTicker());
 
-        if (menu != null) {
+        if (this.menu != null) {
             for (int workSlot : work) {
                 if (workSlot > -1 && workSlot < 54) {
-                    ChestMenu.MenuClickHandler mcl = menu.getMenuClickHandler(workSlot);
-                    menu.addMenuClickHandler(workSlot, new RSCClickHandler() {
+                    ChestMenu.MenuClickHandler mcl = this.menu.getMenuClickHandler(workSlot);
+                    this.menu.addMenuClickHandler(workSlot, new RSCClickHandler() {
                         @Override
                         public void mainFunction(Player player, int slot, ItemStack itemStack, ClickAction action) {
-                            if (eval != null) {
-                                eval.addThing("working", true);
+                            if (CustomNoEnergyMachine.this.eval != null) {
+                                CustomNoEnergyMachine.this.eval.addThing("working", true);
                             }
                         }
 
@@ -121,7 +122,7 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
                 this.processor.setProgressBar(menu.getProgressBarItem());
             }
 
-            createPreset(this, menu::apply);
+            createPreset(this, this.menu::apply);
         }
     }
 

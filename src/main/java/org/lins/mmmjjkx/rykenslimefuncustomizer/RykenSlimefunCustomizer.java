@@ -47,7 +47,6 @@ public final class RykenSlimefunCustomizer extends JavaPlugin implements Slimefu
 
         new BlockListener();
         new SingleItemRecipeGuideListener();
-        new ScriptableEventListener();
 
         ExceptionHandler.info("RykenSlimeCustomizer loaded successfully！");
 

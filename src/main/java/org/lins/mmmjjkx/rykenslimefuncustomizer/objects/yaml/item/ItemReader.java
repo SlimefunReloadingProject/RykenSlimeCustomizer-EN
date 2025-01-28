@@ -46,7 +46,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
     public SlimefunItem readEach(String s) {
         ConfigurationSection section = configuration.getConfigurationSection(s);
         if (section == null) return null;
-        String id = section.getString("id_alias", s).toUpperCase();
+        String id = addon.getId(s, section.getString("id_alias"));
 
         ExceptionHandler.HandleResult result = ExceptionHandler.handleIdConflict(id);
 
@@ -86,6 +86,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                 ExceptionHandler.handleWarning("There was an error while loading item" + s + " in addon "
                         + addon.getAddonId() + ": " + "Could not find script file " + file.getName());
             } else {
+                ExceptionHandler.debugLog("加载了附属" + addon.getAddonId() + "中物品" + s + "的脚本文件" + file.getName());
                 eval = new JavaScriptEval(file, addon);
             }
         }
@@ -264,7 +265,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
             return null;
         }
 
-        return List.of(new SlimefunItemStack(section.getString("id_alias", key).toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(addon.getId(key, section.getString("id_alias")), stack));
     }
 
     @SneakyThrows

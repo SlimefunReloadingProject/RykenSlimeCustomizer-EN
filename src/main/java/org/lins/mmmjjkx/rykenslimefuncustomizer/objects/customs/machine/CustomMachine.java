@@ -63,12 +63,6 @@ public class CustomMachine extends AbstractEmptyMachine<MachineOperation> implem
         this.eval = eval;
         this.processor = new MachineProcessor<>(this);
 
-        if (menu != null) {
-            this.processor.setProgressBar(menu.getProgressBarItem());
-
-            createPreset(this, menu::apply);
-        }
-
         if (eval != null) {
             eval.doInit();
 
@@ -77,7 +71,7 @@ public class CustomMachine extends AbstractEmptyMachine<MachineOperation> implem
                 public void onPlayerPlace(@NotNull BlockPlaceEvent e) {
                     CustomMachine.this.eval.evalFunction("onPlace", e);
                 }
-            }, (BlockUseHandler) e -> CustomMachine.this.eval.evalFunction("onUse", e),
+            },
             new BlockBreakHandler(false, false) {
                 @Override
                 public void onPlayerBreak(@NotNull BlockBreakEvent e, @NotNull ItemStack item, @NotNull List<ItemStack> drops) {
@@ -86,7 +80,13 @@ public class CustomMachine extends AbstractEmptyMachine<MachineOperation> implem
             });
         }
 
-        addItemHandler(new ScriptedEvalBreakHandler(this, eval), getBlockTicker());
+        addItemHandler(new ScriptedEvalBreakHandler(this, eval));
+
+        if (menu != null) {
+            this.processor.setProgressBar(menu.getProgressBarItem());
+
+            createPreset(this, menu::apply);
+        }
     }
 
     @Override

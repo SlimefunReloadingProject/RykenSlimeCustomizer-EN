@@ -13,6 +13,8 @@ import com.oracle.truffle.js.runtime.objects.JSObject;
 import com.oracle.truffle.js.runtime.objects.JSObjectUtil;
 import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
+import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import java.io.File;
@@ -55,6 +57,8 @@ public class JavaScriptEval extends ScriptEval {
         addThing("SlimefunUtils", env.asHostSymbol(SlimefunUtils.class));
         addThing("BlockMenu", env.asHostSymbol(BlockMenu.class));
         addThing("BlockMenuUtil", env.asHostSymbol(BlockMenuUtil.class));
+        addThing("PlayerProfile", env.asHostSymbol(PlayerProfile.class));
+        addThing("Slimefun", env.asHostSymbol(Slimefun.class));
 
         for (File file : Objects.requireNonNull(PLUGINS_FOLDER.listFiles())) {
             TruffleFile truffleFile = env.getPublicTruffleFile(file.toURI());
@@ -112,17 +116,19 @@ public class JavaScriptEval extends ScriptEval {
         }
 
         try {
-            return jsEngine.invokeFunction(funName, args);
+            Object result = jsEngine.invokeFunction(funName, args);
+            ExceptionHandler.debugLog("运行了 " + getAddon().getAddonName() + "的脚本" + getFile().getName() + "中的函数 " + funName);
+            return result;
         } catch (IllegalStateException e) {
             String message = e.getMessage();
             if (!message.contains("Multi threaded access")) {
-                ExceptionHandler.handleError("在运行" + getFile().getName() + "时发生错误");
-                e.printStackTrace();
+                ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
             }
         } catch (ScriptException e) {
-            ExceptionHandler.handleError("An error occurred while executing script file " + getFile().getName());
-            e.printStackTrace();
+            ExceptionHandler.handleError("An error occurred while executing script file " + getFile().getName() + "of addonn" + addon.getAddonName(), e);
         } catch (NoSuchMethodException ignored) {
+        } catch (Throwable e) {
+            ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
         }
 
         return null;

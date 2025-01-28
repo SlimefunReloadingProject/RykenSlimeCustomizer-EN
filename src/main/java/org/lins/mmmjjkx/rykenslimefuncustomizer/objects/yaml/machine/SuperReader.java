@@ -29,16 +29,16 @@ public class SuperReader extends YamlReader<SlimefunItem> {
     public SlimefunItem readEach(String s) {
         ConfigurationSection section = configuration.getConfigurationSection(s);
         if (section == null) return null;
-        String id = section.getString("id_alias", s).toUpperCase();
+        String id = addon.getId(s, section.getString("id_alias"));
 
         ExceptionHandler.HandleResult result = ExceptionHandler.handleIdConflict(id);
 
         if (result == ExceptionHandler.HandleResult.FAILED) return null;
 
-        String igId = section.getString("item_group");
-
         SlimefunItemStack sfis = getPreloadItem(id);
         if (sfis == null) return null;
+
+        String igId = section.getString("item_group");
 
         Pair<ExceptionHandler.HandleResult, ItemGroup> group = ExceptionHandler.handleItemGroupGet(addon, igId);
         if (group.getFirstValue() == ExceptionHandler.HandleResult.FAILED) return null;
@@ -69,16 +69,37 @@ public class SuperReader extends YamlReader<SlimefunItem> {
                     + addon.getAddonId() + ": " + "Class " + className + " is not a SlimefunItem");
             return null;
         }
+
+        // a dangerous option to ignore accessibility
+        // Author: balugaq
+        boolean ignoreAccessible = section.getBoolean("ignore_accessible", false);
+
+        if (ignoreAccessible) {
+            ExceptionHandler.handleWarning(
+                    "在附属" + addon.getAddonId() + "中加载继承物品" + s + "发现了 ignore_accessible 选项被启用，这可能会导致潜在的安全漏洞!");
+        }
         // a zero-based number
-        int ctorIndex = section.getInt("ctor", 0);
-        if (clazz.getConstructors().length < ctorIndex + 1) {
-            ExceptionHandler.handleError("Found an error while loading super item " + s + " in addon "
+        int constructorIndex = section.getInt("ctor", 0);
+        if (clazz.getConstructors().length < constructorIndex + 1) {
+            if (ignoreAccessible) {
+                // try to find a private constructor
+                if (clazz.getDeclaredConstructors().length < constructorIndex + 1) {
+                   ExceptionHandler.handleError("Found an error while loading super item " + s + " in addon "
                     + addon.getAddonId() + ": " + "Invalid constructor at index " + ctorIndex);
-            return null;
+                }
+            } else {
+                ExceptionHandler.handleError("Found an error while loading super item " + s + " in addon "
+                    + addon.getAddonId() + ": " + "Invalid constructor at index " + ctorIndex);
+                return null;
+            }
+        }
+        Constructor<? extends SlimefunItem> constructor;
+        if (!ignoreAccessible) {
+            constructor = (Constructor<? extends SlimefunItem>) clazz.getConstructors()[constructorIndex];
+        } else {
+            constructor = (Constructor<? extends SlimefunItem>) clazz.getDeclaredConstructors()[constructorIndex];
         }
 
-        Constructor<? extends SlimefunItem> ctor =
-                (Constructor<? extends SlimefunItem>) clazz.getConstructors()[ctorIndex];
         Object[] args = section.getList("args", new ArrayList<>()).toArray();
         List<Object> argTemplate =
                 (List<Object>) section.getList("arg_template", List.of("group", "item", "recipe_type", "recipe"));
@@ -96,7 +117,7 @@ public class SuperReader extends YamlReader<SlimefunItem> {
         try {
             List<Object> newArgs = new ArrayList<>(List.of(originArgs));
             newArgs.addAll(List.of(args));
-            instance = ctor.newInstance(newArgs.toArray());
+            instance = constructor.newInstance(newArgs.toArray());
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
             ExceptionHandler.handleError(
                     "An unexpected error occurred while loading super item " + s + " in addon " + addon.getAddonId()
@@ -128,7 +149,9 @@ public class SuperReader extends YamlReader<SlimefunItem> {
                 }
 
                 try {
-                    method.setAccessible(true);
+                    if (ignoreAccessible) {
+                        method.setAccessible(true);
+                    }
                     method.invoke(instance, args1);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     ExceptionHandler.handleError(
@@ -145,28 +168,44 @@ public class SuperReader extends YamlReader<SlimefunItem> {
                 try {
                     Field field = getField(clazz, fieldName);
 
-                    if (field == null) throw new NoSuchFieldException(fieldName);
-                    if (Modifier.isStatic(field.getModifiers()))
-                        throw new IllegalAccessException("Found an error while loading super item " + s + " in addon "
+                    if (field == null) {
+                        ExceptionHandler.handleError("Found an error while loading super item " + s + " in addon "
+                                + addon.getAddonId() + ": cannot find the field named" + fieldName);
+                        continue;
+                    }
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        ExceptionHandler.handleError(
+                                "Found an error while loading super item " + s + " in addon "
                                 + addon.getAddonId() + ": Field " + fieldName + "'s value cannot be modified");
+                        return null;
+                    }
 
-                    if (Modifier.isFinal(field.getModifiers()))
-                        throw new IllegalAccessException("Found an error while loading super item " + s + " in addon "
+                    if (Modifier.isFinal(field.getModifiers())) {
+                        ExceptionHandler.handleError(
+                                "Found an error while loading super item " + s + " in addon "
                                 + addon.getAddonId() + ": Field " + fieldName + "'s value cannot be modified");
+                        return null;
+                    }
 
-                    field.setAccessible(true);
+                    if (ignoreAccessible) {
+                        field.setAccessible(true);
+                    }
                     Object object = fieldArray.getObject(fieldName, field.getType());
                     field.set(instance, object);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ExceptionHandler.handleError(
                             "An unexpected error occurred while loading super item " + s + " in addon "
-                                    + addon.getAddonId()
-                                    + ": Could not modify field's value, but item still can be loaded",
+                                    + addon.getAddonName()
+                                    + ": Could not modify field's value(but the item still can be loaded)",
                             e);
                 }
             }
         }
-        instance.register(RykenSlimefunCustomizer.INSTANCE);
+        try {
+            instance.register(RykenSlimefunCustomizer.INSTANCE);
+        } catch (Throwable e) {
+            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载继承物品" + s + "时遇到了问题: " + "注册失败", e);
+        }
 
         return instance;
     }
@@ -184,7 +223,7 @@ public class SuperReader extends YamlReader<SlimefunItem> {
                     + addon.getAddonId() + ": " + "The item is null or has an invalid format");
             return null;
         }
-        return List.of(new SlimefunItemStack(section.getString("id_alias", s).toUpperCase(), stack));
+        return List.of(new SlimefunItemStack(addon.getId(s, section.getString("id_alias")), stack));
     }
 
     private Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
