@@ -36,6 +36,7 @@ public class JavaScriptEval extends ScriptEval {
     private static final File PLUGINS_FOLDER = RykenSlimefunCustomizer.INSTANCE.getDataFolder().getParentFile();
     private static final String[] packages = {"io", "net"};
 
+    private final ProjectAddon addon;
     private GraalJSScriptEngine jsEngine;
 
     public JavaScriptEval(@NotNull File js, ProjectAddon addon) {
@@ -45,6 +46,8 @@ public class JavaScriptEval extends ScriptEval {
         setup();
 
         contextInit();
+
+        this.addon = addon;
 
         addon.getScriptEvals().add(this);
     }
@@ -117,7 +120,7 @@ public class JavaScriptEval extends ScriptEval {
 
         try {
             Object result = jsEngine.invokeFunction(funName, args);
-            ExceptionHandler.debugLog("运行了 " + getAddon().getAddonName() + "的脚本" + getFile().getName() + "中的函数 " + funName);
+            ExceptionHandler.debugLog("Run function " + funName + " in file " + getFile().getName() + " of addon " + getAddon().getAddonName());
             return result;
         } catch (IllegalStateException e) {
             String message = e.getMessage();
@@ -147,7 +150,8 @@ public class JavaScriptEval extends ScriptEval {
                         .allowValueSharing(true)
                         .allowHostClassLoading(true)
                         .allowIO(IOAccess.ALL)
-                        .allowHostClassLookup(s -> true));
+                        .allowHostClassLookup(s -> true)
+                        .hostClassLoader(ClassLoader.getSystemClassLoader()));
 
         advancedSetup();
     }

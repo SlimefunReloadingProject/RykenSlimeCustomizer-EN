@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.Nullable;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.ProjectAddon;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomAddonConfig;
-import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 
 public abstract class YamlReader<T> {
@@ -44,7 +43,7 @@ public abstract class YamlReader<T> {
 
             for (SlimefunItemStack item : items) {
                 addon.getPreloadItems().put(item.getItemId(), item);
-                ExceptionHandler.debugLog("&a已预加载物品: " + item.getItemId());
+                ExceptionHandler.debugLog("&aPreloaded item: " + item.getItemId());
             }
         }
     }
@@ -59,27 +58,27 @@ public abstract class YamlReader<T> {
             ConfigurationSection section = configuration.getConfigurationSection(key);
             if (section == null) continue;
 
-            ExceptionHandler.debugLog("Start reading section: " + key);
+            ExceptionHandler.debugLog("Starting to read item: " + key);
 
             ConfigurationSection register = section.getConfigurationSection("register");
             if (!checkForRegistration(key, register)) continue;
 
-            ExceptionHandler.debugLog("Check lateInit...");
+            ExceptionHandler.debugLog("Checking for late initialization...");
 
             if (section.getBoolean("lateInit", false)) {
                 putLateInit(key);
-                ExceptionHandler.debugLog("Check result: lateInit");
+                ExceptionHandler.debugLog("Check result: no late initialization");
                 continue;
             }
 
-            ExceptionHandler.debugLog("Start reading object...");
+            ExceptionHandler.debugLog("Starting to read...");
 
             var object = readEach(key);
             if (object != null) {
                 objects.add(object);
-                ExceptionHandler.debugLog("SUCCESS | Reading section " + key + "success！");
+                ExceptionHandler.debugLog("&aSUCCESS | Item " + key + " read successfully!");
             } else {
-                ExceptionHandler.debugLog("FAILURE | Reading section " + key + "failed！");
+                ExceptionHandler.debugLog("&cFAILURE | Item " + key + " read failed!");
             }
         }
         return objects;
@@ -92,13 +91,13 @@ public abstract class YamlReader<T> {
     public List<T> loadLateInits() {
         List<T> objects = new ArrayList<>();
         lateInits.forEach(key -> {
-            ExceptionHandler.debugLog("Start reading lateInit section：" + key);
+            ExceptionHandler.debugLog("Starting to read late initialization item: " + key);
             var object = readEach(key);
             if (object != null) {
                 objects.add(object);
-                ExceptionHandler.debugLog("SUCCESS | Reading section " + key + "success！");
+                ExceptionHandler.debugLog("&aSUCCESS | Item " + key + " read successfully!");
             } else {
-                ExceptionHandler.debugLog("FAILURE | Reading section " + key + "failed！");
+                ExceptionHandler.debugLog("&cFAILURE | Item " + key + " read failed!");
             }
         });
 
@@ -123,35 +122,31 @@ public abstract class YamlReader<T> {
             String head = splits[0];
             if (head.equalsIgnoreCase("hasplugin")) {
                 if (splits.length != 2) {
-                    ExceptionHandler.handleError("Found invalid condition while reading register conditions in " + key
-                            + ": hasplugin only takes one argument");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": hasplugin requires only one parameter");
                     continue;
                 }
                 boolean b = Bukkit.getPluginManager().isPluginEnabled(splits[1]);
                 if (!b) {
                     if (warn) {
-                        ExceptionHandler.handleError(key + "needs server plugin " + splits[1] + " to be registered");
+                        ExceptionHandler.handleError(key + " requires server plugin " + splits[1] + " to be registered");
                     }
                     return false;
                 }
             } else if (head.equalsIgnoreCase("!hasplugin")) {
                 if (splits.length != 2) {
-                    ExceptionHandler.handleError("Found invalid condition while reading register conditions in " + key
-                            + ": !hasplugin only takes one argument");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": !hasplugin requires only one parameter");
                     continue;
                 }
                 boolean b = Bukkit.getPluginManager().isPluginEnabled(splits[1]);
                 if (b) {
                     if (warn) {
-                        ExceptionHandler.handleError(key + "needs removing server plugin " + splits[1]
-                                + " to be registered(may have conflicts?)");
+                        ExceptionHandler.handleError(key + " requires server plugin " + splits[1] + " to be uninstalled to be registered (possible conflict?)");
                     }
                     return false;
                 }
             } else if (head.equalsIgnoreCase("version")) {
                 if (splits.length != 3) {
-                    ExceptionHandler.handleError("Found invalid condition while reading register conditions in " + key
-                            + ": version needs two arguments");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version requires two parameters");
                     continue;
                 }
 
@@ -162,7 +157,7 @@ public abstract class YamlReader<T> {
                     try {
                         targetMajor = Integer.parseInt(versionSplit[1]);
                     } catch (NumberFormatException e) {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                         continue;
                     }
                 } else if (versionSplit.length == 3) {
@@ -170,53 +165,94 @@ public abstract class YamlReader<T> {
                         targetMajor = Integer.parseInt(versionSplit[1]);
                         targetMinor = Integer.parseInt(versionSplit[2]);
                     } catch (NumberFormatException e) {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                         continue;
                     }
                 } else {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                 }
 
-                if (!intCheck(splits[1], key, "version", current, destination, (op) -> "Needs version is " + op + splits[2] + " so that it can be registered", warn)) {
+                // ExceptionHandler.info("key: " + key + " condition: " + condition + " major: " + targetMajor + " minor: " + targetMinor);
+                boolean pass = false;
+                switch (splits[1]) {
+                    case ">" -> {
+                        if (MAJOR_VERSION > targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION > targetMinor)) {
+                            pass = true;
+                        }
+                    }
+                    case "<" -> {
+                        if (MAJOR_VERSION < targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION < targetMinor)) {
+                            pass = true;
+                        }
+                    }
+                    case ">=" -> {
+                        if (MAJOR_VERSION > targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION >= targetMinor)) {
+                            pass = true;
+                        }
+                    }
+                    case "<=" -> {
+                        if (MAJOR_VERSION < targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION <= targetMinor)) {
+                            pass = true;
+                        }
+                    }
+                    case "==" -> {
+                        if (MAJOR_VERSION == targetMajor && MINOR_VERSION == targetMinor) {
+                            pass = true;
+                        }
+                    }
+                    case "!=" -> {
+                        if (MAJOR_VERSION != targetMajor || MINOR_VERSION != targetMinor) {
+                            pass = true;
+                        }
+                    }
+                    default -> {
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version requires a valid comparison operator!");
+                        pass = true;
+                    }
+                }
+                if (!pass) {
+                    if (warn) {
+                        ExceptionHandler.handleError(key + " requires server version " + splits[1] + " " + splits[2] + " to be registered");
+                    }
                     return false;
                 }
             } else if (head.contains("config")) {
                 CustomAddonConfig config = addon.getConfig();
                 if (config == null) {
-                    ExceptionHandler.handleError("Found an issue while reading the registration conditions for " + key + ": cannot found the config");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": unable to get configuration");
                     continue;
                 }
 
                 switch (head) {
                     case "config.boolean" -> {
                         if (splits.length != 2) {
-                            ExceptionHandler.handleError("Found an issue while reading the registration conditions for " + key + ": config.boolean takes one argument");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.boolean requires one parameter");
                             continue;
                         }
 
                         if (!config.config().getBoolean(splits[1])) {
                             if (warn) {
-                                ExceptionHandler.handleError(key + " needs config option " + splits[1] + "'s value is true so that it can be registered");
+                                ExceptionHandler.handleError(key + " requires configuration option " + splits[1] + " to be true to be registered");
                             }
                             return false;
                         }
                     }
                     case "config.string" -> {
                         if (splits.length != 3) {
-                            ExceptionHandler.handleError("Found an issue while reading the registration conditions for " + key + ": config.string takes two arguments");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.string requires two parameters");
                             continue;
                         }
 
                         if (!Objects.equals(config.config().getString(splits[1]), splits[2])) {
                             if (warn) {
-                                ExceptionHandler.handleError(key + " needs config option " + splits[1] + "'s value is" + splits[2] + " so that it can be registered");
+                                ExceptionHandler.handleError(key + " requires configuration option " + splits[1] + " to be " + splits[2] + " to be registered");
                             }
                             return false;
                         }
                     }
                     case "config.int" -> {
                         if (splits.length != 4) {
-                            ExceptionHandler.handleError("Found an issue while reading the registration conditions for " + key + ": config.int takes three arguments");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.int requires three parameters");
                             continue;
                         }
 
@@ -224,7 +260,7 @@ public abstract class YamlReader<T> {
                         int current = config.config().getInt(splits[2]);
                         int destination = Integer.parseInt(splits[3]);
 
-                        if (!intCheck(splits[1], key, "config.int", current, destination, (op) -> " needs config option" + configKey + "'s value is " + op + splits[3] + " so that it can be registered", warn)) {
+                        if (!intCheck(splits[1], key, "config.int", current, destination, (op) -> "requires configuration option " + configKey + op + splits[3] + " to be registered", warn)) {
                             return false;
                         }
                     }
@@ -254,15 +290,15 @@ public abstract class YamlReader<T> {
                 yield current <= destination;
             }
             case "==" -> {
-                operation = "equals";
+                operation = "equal to";
                 yield current == destination;
             }
             case "!=" -> {
-                operation = "not equals";
+                operation = "not equal to";
                 yield current != destination;
             }
             default -> {
-                ExceptionHandler.handleError("Found an issue while reading the registration conditions for " + key + ": " + regParam + " requires a valid operator!");
+                ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": " + regParam + " requires a valid comparison operator!");
                 yield true;
             }
         };

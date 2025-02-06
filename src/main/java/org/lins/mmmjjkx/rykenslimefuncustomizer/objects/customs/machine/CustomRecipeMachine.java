@@ -79,7 +79,7 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
         this.hideAllRecipes = hideAllRecipes;
 
         if (menu == null) {
-            ExceptionHandler.handleWarning("未找到菜单 " + item.getItemId() + " 使用默认菜单");
+            ExceptionHandler.handleWarning("Cannot find menu for " + item.getItemId() + " . Will use the default one.");
             this.createPreset(this, this.getInventoryTitle(), super::constructMenu);
         }
 

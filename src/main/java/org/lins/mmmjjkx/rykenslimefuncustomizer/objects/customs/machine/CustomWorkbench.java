@@ -1,7 +1,5 @@
 package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine;
 
-import com.xzavier0722.mc.plugin.slimefun4.storage.controller.SlimefunBlockData;
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -16,11 +14,11 @@ import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBre
 import io.github.thebusybiscuit.slimefun4.implementation.operations.CraftingOperation;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
-import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import lombok.Getter;
+import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.interfaces.InventoryBlock;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
+import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import me.mrCookieSlime.Slimefun.api.item_transport.ItemTransportFlow;
@@ -36,7 +34,6 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomMenu;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.machine.CustomLinkedMachineRecipe;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.ScriptEval;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.BlockMenuUtil;
-import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.StackUtils;
 
@@ -52,8 +49,10 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
         }
 
         @Override
-        public void tick(Block b, SlimefunItem slimefunItem, SlimefunBlockData data) {}
+        public void tick(Block block, SlimefunItem slimefunItem, Config config) {
+        }
     };
+
     private final MachineProcessor<CraftingOperation> processor;
     private final int[] input;
     private final int[] output;
@@ -66,9 +65,9 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
     private final ScriptEval eval;
 
     public static final ItemStack RECIPE_INPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&a多物品输入", "", "&2> &a点击查看");
+            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Input", "", "&2> &aClick to view");
     public static final ItemStack RECIPE_OUTPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&a多物品输出", "", "&2> &a点击查看");
+            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Output", "", "&2> &aClick to view");
 
     @Getter
     @Nullable private final CustomMenu menu;
@@ -102,7 +101,7 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
         this.eval = eval;
 
         if (menu == null) {
-            ExceptionHandler.handleError("未找到菜单 " + item.getItemId());
+            ExceptionHandler.handleWarning("Cannot find menu for " + item.getItemId() + "!");
             return;
         }
 
@@ -164,7 +163,7 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
     protected BlockBreakHandler onBlockBreak() {
         return new SimpleBlockBreakHandler() {
             public void onBlockBreak(@NotNull Block b) {
-                BlockMenu inv = StorageCacheUtils.getMenu(b.getLocation());
+                BlockMenu inv = BlockStorage.getInventory(b.getLocation());
                 if (inv != null) {
                     inv.dropItems(b.getLocation(), CustomWorkbench.this.getInputSlots());
                     inv.dropItems(b.getLocation(), CustomWorkbench.this.getOutputSlots());
@@ -265,11 +264,6 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
 
     @Override
     protected void constructMenu(BlockMenuPreset preset) {}
-
-    @Override
-    protected void tick(Block b) {
-
-    }
 
     @Nullable
     public CustomLinkedMachineRecipe findNextLinkedRecipe(BlockMenu blockMenu) {
