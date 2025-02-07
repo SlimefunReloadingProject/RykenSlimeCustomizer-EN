@@ -139,6 +139,7 @@ public class JavaScriptEval extends ScriptEval {
         jsEngine = GraalJSScriptEngine.create(
                 null,
                 Context.newBuilder("js")
+                        .hostClassLoader(ClassLoader.getSystemClassLoader())
                         .allowAllAccess(true)
                         .allowHostAccess(UNIVERSAL_HOST_ACCESS)
                         .allowNativeAccess(false)
@@ -148,8 +149,7 @@ public class JavaScriptEval extends ScriptEval {
                         .allowValueSharing(true)
                         .allowHostClassLoading(true)
                         .allowIO(IOAccess.ALL)
-                        .allowHostClassLookup(s -> true)
-                        .hostClassLoader(ClassLoader.getSystemClassLoader()));
+                        .allowHostClassLookup(s -> true));
 
         advancedSetup();
     }
