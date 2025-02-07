@@ -54,7 +54,8 @@ public class ArmorReader extends YamlReader<List<CustomArmorPiece>> {
             ConfigurationSection pieceSection = section.getConfigurationSection(check);
             if (pieceSection == null) continue;
 
-            String pieceId = addon.getId(s + "_" + check.toUpperCase(), section.getString("id_alias", pieceSection.getString("id", "")));
+            String pieceId = addon.getId(
+                    s + "_" + check.toUpperCase(), section.getString("id_alias", pieceSection.getString("id", "")));
 
             ExceptionHandler.HandleResult result = ExceptionHandler.handleIdConflict(pieceId);
             if (result == ExceptionHandler.HandleResult.FAILED) return null;
@@ -144,7 +145,11 @@ public class ArmorReader extends YamlReader<List<CustomArmorPiece>> {
                 continue;
             }
 
-            SlimefunItemStack sfis = new SlimefunItemStack(addon.getId(s + "_" + check.toUpperCase(), section.getString("id_alias", pieceSection.getString("id", ""))), stack);
+            SlimefunItemStack sfis = new SlimefunItemStack(
+                    addon.getId(
+                            s + "_" + check.toUpperCase(),
+                            section.getString("id_alias", pieceSection.getString("id", ""))),
+                    stack);
             items.add(sfis);
         }
 

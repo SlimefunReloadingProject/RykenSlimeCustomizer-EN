@@ -130,7 +130,12 @@ public class TemplateMachineReader extends YamlReader<CustomTemplateMachine> {
         }
 
         for (String key : section.getKeys(false)) {
-            SlimefunItemStack item = getPreloadItem(key) == null ? SlimefunItem.getById(key) == null ? null : ((SlimefunItemStack) SlimefunItem.getById(key).getItem().clone()) : getPreloadItem(key);
+            SlimefunItemStack item = getPreloadItem(key) == null
+                    ? SlimefunItem.getById(key) == null
+                            ? null
+                            : ((SlimefunItemStack)
+                                    SlimefunItem.getById(key).getItem().clone())
+                    : getPreloadItem(key);
 
             if (item == null) {
                 ExceptionHandler.handleError("Found an error while loading template machine " + s + " in addon "

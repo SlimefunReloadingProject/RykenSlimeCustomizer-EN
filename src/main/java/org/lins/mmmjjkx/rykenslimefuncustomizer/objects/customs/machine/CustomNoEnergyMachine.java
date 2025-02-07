@@ -12,7 +12,6 @@ import io.github.thebusybiscuit.slimefun4.core.machines.MachineProcessor;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-
 import lombok.Getter;
 import lombok.Setter;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
@@ -32,8 +31,8 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomMenu;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.parent.AbstractEmptyMachine;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.machine.ScriptedEvalBreakHandler;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.machine.SmallerMachineInfo;
-import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.lambda.RSCClickHandler;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.ScriptEval;
+import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.lambda.RSCClickHandler;
 
 @SuppressWarnings("deprecation")
 public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation> {
@@ -82,18 +81,21 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
 
             eval.doInit();
 
-            addItemHandler(new BlockPlaceHandler(false) {
-                @Override
-                public void onPlayerPlace(@NotNull BlockPlaceEvent e) {
-                    CustomNoEnergyMachine.this.eval.evalFunction("onPlace", e);
-                }
-            }, 
-            new BlockBreakHandler(false, false) {
-                @Override
-                public void onPlayerBreak(@NotNull BlockBreakEvent e, @NotNull ItemStack item, @NotNull List<ItemStack> drops) {
-                    CustomNoEnergyMachine.this.eval.evalFunction("onBreak", e, item, drops);
-                }
-            });
+            addItemHandler(
+                    new BlockPlaceHandler(false) {
+                        @Override
+                        public void onPlayerPlace(@NotNull BlockPlaceEvent e) {
+                            CustomNoEnergyMachine.this.eval.evalFunction("onPlace", e);
+                        }
+                    },
+                    (BlockUseHandler) e -> CustomNoEnergyMachine.this.eval.evalFunction("onUse", e),
+                    new BlockBreakHandler(false, false) {
+                        @Override
+                        public void onPlayerBreak(
+                                @NotNull BlockBreakEvent e, @NotNull ItemStack item, @NotNull List<ItemStack> drops) {
+                            CustomNoEnergyMachine.this.eval.evalFunction("onBreak", e, item, drops);
+                        }
+                    });
         }
 
         addItemHandler(new ScriptedEvalBreakHandler(this, eval));
@@ -106,8 +108,8 @@ public class CustomNoEnergyMachine extends AbstractEmptyMachine<MachineOperation
                     this.menu.addMenuClickHandler(workSlot, new RSCClickHandler() {
                         @Override
                         public void mainFunction(Player player, int slot, ItemStack itemStack, ClickAction action) {
-                            if (CustomNoEnergyMachine.this.eval != null) {
-                                CustomNoEnergyMachine.this.eval.addThing("working", true);
+                            if (eval != null) {
+                                eval.addThing("working", true);
                             }
                         }
 
