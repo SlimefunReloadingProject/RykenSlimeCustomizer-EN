@@ -4,7 +4,6 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage;
 import com.oracle.truffle.api.strings.TruffleString;
-import com.oracle.truffle.js.builtins.JavaBuiltinsOverride;
 import com.oracle.truffle.js.lang.JavaScriptLanguage;
 import com.oracle.truffle.js.runtime.JSRealm;
 import com.oracle.truffle.js.runtime.java.JavaPackage;
@@ -77,7 +76,6 @@ public class JavaScriptEval extends ScriptEval {
 
         JSObject java = JSObjectUtil.createOrdinaryPrototypeObject(realm);
         JSObjectUtil.putToStringTag(java, JSRealm.JAVA_CLASS_NAME);
-        JSObjectUtil.putFunctionsFromContainer(realm, java, new JavaBuiltinsOverride());
 
         JSObjectUtil.putDataProperty(realm.getGlobalObject(), "Java", java, JSAttributes.getDefaultNotEnumerable());
     }

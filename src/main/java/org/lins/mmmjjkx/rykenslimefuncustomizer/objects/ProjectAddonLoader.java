@@ -154,7 +154,7 @@ public class ProjectAddonLoader {
                         Bukkit.getPluginManager().registerEvents(listenerObj, RykenSlimefunCustomizer.INSTANCE);
 
                         addon.setEventListener(listenerObj);
-                        ExceptionHandler.info("成功注册附属 " + addon.getAddonId() + " 的监听脚本 " + file.getName() + "!");
+                        ExceptionHandler.info("Added script listener (file: " + file.getName() + ") for addon " + addon.getAddonId() + " successfully!");
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                         throw new RuntimeException(e);
                     }
@@ -203,7 +203,7 @@ public class ProjectAddonLoader {
                 if (idPattern.contains("%0")) {
                     addon.setIdPattern(idPattern);
                 } else {
-                    ExceptionHandler.handleError("在名称为 " + file.getName() + "的文件夹中有无效的配置: idPattern，idPattern 必须包含 %0（原id）");
+                    ExceptionHandler.handleError("There is an invalid configuration in the folder named ' + file.getName() + ': idPattern must include %0 (the original id).");
                 }
             }
         } else {
