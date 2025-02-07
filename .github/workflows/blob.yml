@@ -3,7 +3,7 @@ name: Publish build
 on:
   push:
     branches:
-      - master # Only publish when pushing to "main"
+      - main # Only publish when pushing to "main"
 
 jobs:
   publish:
