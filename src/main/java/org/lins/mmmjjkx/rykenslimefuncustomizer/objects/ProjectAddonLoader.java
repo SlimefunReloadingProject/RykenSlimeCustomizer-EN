@@ -143,7 +143,8 @@ public class ProjectAddonLoader {
                             String.valueOf(scriptListener.charAt(0)),
                             String.valueOf(Character.toUpperCase(scriptListener.charAt(0))));
 
-                    Class<? extends ScriptableEventListener> sel = new ByteBuddy().subclass(ScriptableEventListener.class)
+                    Class<? extends ScriptableEventListener> sel = new ByteBuddy()
+                            .subclass(ScriptableEventListener.class)
                             .name("org.rykenslimefuncustomizer.addoncontents.listeners." + listenerName)
                             .make()
                             .load(getClass().getClassLoader())
@@ -258,7 +259,8 @@ public class ProjectAddonLoader {
         MultiBlockMachineReader multiBlockMachineReader = new MultiBlockMachineReader(multiBlockMachines, addon);
         SuperReader superReader = new SuperReader(supers, addon);
         TemplateMachineReader templateMachineReader = new TemplateMachineReader(templateMachines, addon);
-        LinkedRecipeMachineReader linkedRecipeMachineReader = new LinkedRecipeMachineReader(linkedRecipeMachines, addon);
+        LinkedRecipeMachineReader linkedRecipeMachineReader =
+                new LinkedRecipeMachineReader(linkedRecipeMachines, addon);
         WorkbenchReader workbenchReader = new WorkbenchReader(workbenches, addon);
 
         ExceptionHandler.debugLog("Start preloading items from addon " + addon.getAddonId() + "...");

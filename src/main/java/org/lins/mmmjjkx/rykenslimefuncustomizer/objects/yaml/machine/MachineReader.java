@@ -75,15 +75,7 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
 
         AbstractEmptyMachine<?> machine;
         CustomNoEnergyMachine defaultNoEnergyMachine = new CustomNoEnergyMachine(
-                group.getSecondValue(),
-                slimefunItemStack,
-                rt.getSecondValue(),
-                recipe,
-                menu,
-                input,
-                output,
-                eval,
-                -1);
+                group.getSecondValue(), slimefunItemStack, rt.getSecondValue(), recipe, menu, input, output, eval, -1);
 
         if (section.contains("energy")) {
             ConfigurationSection energySettings = section.getConfigurationSection("energy");
@@ -111,7 +103,7 @@ public class MachineReader extends YamlReader<AbstractEmptyMachine<?>> {
             if (enc.getFirstValue() == ExceptionHandler.HandleResult.FAILED) {
                 return defaultNoEnergyMachine;
             }
-            
+
             if (energySettings.contains("energyOutput")) {
                 int energyOutput = section.getInt("energyOutput");
                 if (energyOutput < 0) {
