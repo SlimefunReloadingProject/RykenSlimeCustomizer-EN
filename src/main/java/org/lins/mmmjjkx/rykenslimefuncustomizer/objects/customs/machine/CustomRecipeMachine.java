@@ -1,6 +1,5 @@
 package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.machine;
 
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -17,6 +16,7 @@ import java.util.List;
 import lombok.Getter;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.MachineRecipe;
+import me.mrCookieSlime.Slimefun.api.BlockStorage;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenuPreset;
 import org.bukkit.Material;
@@ -43,9 +43,9 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
     private final boolean hideAllRecipes;
 
     public static final ItemStack RECIPE_INPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&a多物品输入", "", "&2> &a点击查看");
+            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Input", "", "&2> &aClick to view");
     public static final ItemStack RECIPE_OUTPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&a多物品输出", "", "&2> &a点击查看");
+            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Output", "", "&2> &aClick to view");
 
     @Getter
     @Nullable private final CustomMenu menu;
@@ -77,7 +77,7 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
         this.hideAllRecipes = hideAllRecipes;
 
         if (menu == null) {
-            ExceptionHandler.handleWarning("未找到菜单 " + item.getItemId() + " 使用默认菜单");
+            ExceptionHandler.handleWarning("Cannot find menu for " + item.getItemId() + " . Will use the default one.");
             this.createPreset(this, this.getInventoryTitle(), super::constructMenu);
         }
 
@@ -99,7 +99,7 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
     protected BlockBreakHandler onBlockBreak() {
         return new SimpleBlockBreakHandler() {
             public void onBlockBreak(@NotNull Block b) {
-                BlockMenu inv = StorageCacheUtils.getMenu(b.getLocation());
+                BlockMenu inv = BlockStorage.getInventory(b);
                 if (inv != null) {
                     inv.dropItems(b.getLocation(), CustomRecipeMachine.this.getInputSlots());
                     inv.dropItems(b.getLocation(), CustomRecipeMachine.this.getOutputSlots());
@@ -162,7 +162,7 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
             if (output.length == 1) {
                 int seconds = recipe.getTicks() / 2;
                 ItemStack out = output[0].clone();
-                String rawLore = "&e制作时间: &b" + seconds + "&es";
+                String rawLore = "&eProduction Time: &b" + seconds + "&es";
                 if (seconds > 60) {
                     rawLore = rawLore.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
                 }
@@ -204,7 +204,7 @@ public class CustomRecipeMachine extends AContainer implements RecipeDisplayItem
 
     @Override
     protected void tick(Block b) {
-        BlockMenu inv = StorageCacheUtils.getMenu(b.getLocation());
+        BlockMenu inv = BlockStorage.getInventory(b);
         CustomCraftingOperation currentOperation = (CustomCraftingOperation) this.processor.getOperation(b);
         int progressSlot = this.menu == null || this.menu.getProgressSlot() == -1 ? 22 : this.menu.getProgressSlot();
         if (inv != null) {
