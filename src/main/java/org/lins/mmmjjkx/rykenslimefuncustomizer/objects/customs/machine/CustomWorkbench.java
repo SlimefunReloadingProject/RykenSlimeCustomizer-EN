@@ -14,6 +14,9 @@ import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBre
 import io.github.thebusybiscuit.slimefun4.implementation.operations.CraftingOperation;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
@@ -36,10 +39,6 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.script.ScriptEval;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.BlockMenuUtil;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.StackUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class CustomWorkbench extends AContainer implements EnergyNetComponent, RecipeDisplayItem {
     private final BlockTicker blockTicker = new BlockTicker() {
@@ -92,7 +91,8 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
         this.input = input;
         this.output = output;
         this.raw_recipes = recipes;
-        this.recipes = new ArrayList<>(raw_recipes.stream().filter(r -> !r.isForDisplay()).toList());
+        this.recipes = new ArrayList<>(
+                raw_recipes.stream().filter(r -> !r.isForDisplay()).toList());
         this.energyPerCraft = energyPerCraft;
         this.capacity = capacity;
         this.menu = menu;
@@ -117,28 +117,32 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
             }
 
             public void newInstance(@NotNull BlockMenu menu, @NotNull Block b) {
-                menu.addMenuClickHandler(CustomWorkbench.this.click, (player, clickedSlot, clickedItem, clickAction) -> {
-                    if (CustomWorkbench.this.eval != null) {
-                        Object result = CustomWorkbench.this.eval.evalFunction("onClick", this, player, clickedSlot, clickedItem, clickAction);
-                        if (result instanceof Boolean booleanResult) {
-                            return booleanResult;
-                        }
+                menu.addMenuClickHandler(
+                        CustomWorkbench.this.click, (player, clickedSlot, clickedItem, clickAction) -> {
+                            if (CustomWorkbench.this.eval != null) {
+                                Object result = CustomWorkbench.this.eval.evalFunction(
+                                        "onClick", this, player, clickedSlot, clickedItem, clickAction);
+                                if (result instanceof Boolean booleanResult) {
+                                    return booleanResult;
+                                }
 
-                        return false;
-                    } else {
-                        if (!takeCharge(menu.getLocation())) {
-                            return false;
-                        }
+                                return false;
+                            } else {
+                                if (!takeCharge(menu.getLocation())) {
+                                    return false;
+                                }
 
-                        CustomLinkedMachineRecipe nextRecipe = CustomWorkbench.this.findNextLinkedRecipe(menu);
-                        if (nextRecipe != null) {
-                            BlockMenuUtil.pushItem(menu, nextRecipe.getLinkedOutput(), nextRecipe.isChooseOneIfHas());
-                        }
+                                CustomLinkedMachineRecipe nextRecipe = CustomWorkbench.this.findNextLinkedRecipe(menu);
+                                if (nextRecipe != null) {
+                                    BlockMenuUtil.pushItem(
+                                            menu, nextRecipe.getLinkedOutput(), nextRecipe.isChooseOneIfHas());
+                                }
 
-                        return false;
-                    }
-                });
+                                return false;
+                            }
+                        });
             }
+
             public int[] getSlotsAccessedByItemTransport(ItemTransportFlow flow) {
                 return flow == ItemTransportFlow.INSERT ? input : output;
             }
@@ -147,7 +151,9 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
                 if (p.hasPermission("slimefun.inventory.bypass")) {
                     return true;
                 } else {
-                    return CustomWorkbench.this.canUse(p, false) && Slimefun.getProtectionManager().hasPermission(p, b.getLocation(), Interaction.INTERACT_BLOCK);
+                    return CustomWorkbench.this.canUse(p, false)
+                            && Slimefun.getProtectionManager()
+                                    .hasPermission(p, b.getLocation(), Interaction.INTERACT_BLOCK);
                 }
             }
         };
@@ -246,8 +252,7 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
         return output;
     }
 
-    @NotNull
-    @Override
+    @NotNull @Override
     public EnergyNetComponentType getEnergyComponentType() {
         return EnergyNetComponentType.CONSUMER;
     }
@@ -265,8 +270,10 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
     @Override
     protected void constructMenu(BlockMenuPreset preset) {}
 
-    @Nullable
-    public CustomLinkedMachineRecipe findNextLinkedRecipe(BlockMenu blockMenu) {
+    @Override
+    protected void tick(Block b) {}
+
+    @Nullable public CustomLinkedMachineRecipe findNextLinkedRecipe(BlockMenu blockMenu) {
         for (CustomLinkedMachineRecipe recipe : this.recipes) {
             Map<Integer, ItemStack> inputMap = recipe.getLinkedInput();
             boolean matched = true;
@@ -286,9 +293,11 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
                 continue;
             }
 
-
             for (int slot : inputMap.keySet()) {
-                blockMenu.consumeItem(slot, inputMap.get(slot).getAmount());
+                ItemStack itemStack = blockMenu.getItemInSlot(slot);
+                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                    blockMenu.consumeItem(slot, inputMap.get(slot).getAmount());
+                }
             }
             return recipe;
         }

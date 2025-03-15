@@ -10,9 +10,6 @@ import io.github.thebusybiscuit.slimefun4.core.networks.energy.EnergyNetComponen
 import io.github.thebusybiscuit.slimefun4.implementation.handlers.SimpleBlockBreakHandler;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
-
-import java.util.*;
-
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.interfaces.InventoryBlock;
 import me.mrCookieSlime.Slimefun.Objects.handlers.BlockTicker;
@@ -24,6 +21,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.RykenSlimefunCustomizer;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.CustomMenu;
+
+import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class CustomMaterialGenerator extends SlimefunItem
@@ -199,8 +198,7 @@ public class CustomMaterialGenerator extends SlimefunItem
                 if (blockMenu.hasViewer()) {
                     if (statusSlot > -1) {
                         blockMenu.replaceExistingItem(
-                                statusSlot,
-                                new CustomItemStack(Material.ORANGE_STAINED_GLASS_PANE, "&cNot enough space"));
+                                statusSlot, new CustomItemStack(Material.ORANGE_STAINED_GLASS_PANE, "&c空间不足"));
                     }
                 }
             }

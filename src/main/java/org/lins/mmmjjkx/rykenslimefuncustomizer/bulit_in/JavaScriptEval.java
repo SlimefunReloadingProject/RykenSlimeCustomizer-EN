@@ -3,10 +3,8 @@ package org.lins.mmmjjkx.rykenslimefuncustomizer.bulit_in;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.oracle.truffle.api.TruffleFile;
 import com.oracle.truffle.api.TruffleLanguage;
-import com.oracle.truffle.api.strings.TruffleString;
 import com.oracle.truffle.js.lang.JavaScriptLanguage;
 import com.oracle.truffle.js.runtime.JSRealm;
-import com.oracle.truffle.js.runtime.java.JavaPackage;
 import com.oracle.truffle.js.runtime.objects.JSAttributes;
 import com.oracle.truffle.js.runtime.objects.JSObject;
 import com.oracle.truffle.js.runtime.objects.JSObjectUtil;
@@ -17,10 +15,13 @@ import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.SlimefunItems;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
 import java.io.File;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import javax.script.ScriptException;
 import me.mrCookieSlime.Slimefun.api.inventory.BlockMenu;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.PolyglotAccess;
 import org.graalvm.polyglot.io.IOAccess;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +33,9 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.BlockMenuUtil;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 
 public class JavaScriptEval extends ScriptEval {
-    private static final File PLUGINS_FOLDER = RykenSlimefunCustomizer.INSTANCE.getDataFolder().getParentFile();
-    private static final String[] packages = {"io", "net"};
+    private static final File PLUGINS_FOLDER =
+            RykenSlimefunCustomizer.INSTANCE.getDataFolder().getParentFile();
+    private final Set<String> failed_functions = new HashSet<>();
 
     private final ProjectAddon addon;
     private GraalJSScriptEngine jsEngine;
@@ -67,11 +69,6 @@ public class JavaScriptEval extends ScriptEval {
             if (!truffleFile.isDirectory() && truffleFile.getName().endsWith(".jar")) {
                 env.addToHostClassPath(truffleFile);
             }
-        }
-
-        for (String packageName : packages) {
-            TruffleString str = TruffleString.fromConstant(packageName, TruffleString.Encoding.UTF_8);
-            JSObjectUtil.putDataProperty(realm.getGlobalObject(), str, JavaPackage.createInit(realm, str), JSAttributes.getDefaultNotEnumerable());
         }
 
         JSObject java = JSObjectUtil.createOrdinaryPrototypeObject(realm);
@@ -116,6 +113,11 @@ public class JavaScriptEval extends ScriptEval {
             contextInit();
         }
 
+        // a simple fix for the optimization
+        if (failed_functions.contains(funName)) {
+            return null;
+        }
+
         try {
             Object result = jsEngine.invokeFunction(funName, args);
             ExceptionHandler.debugLog("Run function " + funName + " in file " + getFile().getName() + " of addon " + getAddon().getAddonName());
@@ -128,6 +130,8 @@ public class JavaScriptEval extends ScriptEval {
         } catch (ScriptException e) {
             ExceptionHandler.handleError("An error occurred while executing script file " + getFile().getName() + "of addonn" + addon.getAddonName(), e);
         } catch (NoSuchMethodException ignored) {
+            // won't log it, because listeners always send a lot of functions
+            failed_functions.add(funName);
         } catch (Throwable e) {
             ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
         }
@@ -137,8 +141,11 @@ public class JavaScriptEval extends ScriptEval {
 
     private void reSetup() {
         jsEngine = GraalJSScriptEngine.create(
-                null,
+                Engine.newBuilder("js")
+                        .allowExperimentalOptions(true)
+                        .build(),
                 Context.newBuilder("js")
+                        .hostClassLoader(RykenSlimefunCustomizer.class.getClassLoader())
                         .hostClassLoader(ClassLoader.getSystemClassLoader())
                         .allowAllAccess(true)
                         .allowHostAccess(UNIVERSAL_HOST_ACCESS)
@@ -147,9 +154,10 @@ public class JavaScriptEval extends ScriptEval {
                         .allowPolyglotAccess(PolyglotAccess.ALL)
                         .allowCreateProcess(true)
                         .allowValueSharing(true)
-                        .allowHostClassLoading(true)
                         .allowIO(IOAccess.ALL)
-                        .allowHostClassLookup(s -> true));
+                        .allowHostClassLookup(s -> true)
+                        .allowHostClassLoading(true)
+                        .hostClassLoader(ClassLoader.getSystemClassLoader()));
 
         advancedSetup();
     }

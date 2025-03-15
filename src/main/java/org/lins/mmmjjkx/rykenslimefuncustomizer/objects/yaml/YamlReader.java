@@ -1,12 +1,11 @@
 package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.yaml;
 
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
+import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-
-import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -172,26 +171,31 @@ public abstract class YamlReader<T> {
                     ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                 }
 
-                // ExceptionHandler.info("key: " + key + " condition: " + condition + " major: " + targetMajor + " minor: " + targetMinor);
+                // ExceptionHandler.info("key: " + key + " condition: " + condition + " major: " + targetMajor + "
+                // minor: " + targetMinor);
                 boolean pass = false;
                 switch (splits[1]) {
                     case ">" -> {
-                        if (MAJOR_VERSION > targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION > targetMinor)) {
+                        if (MAJOR_VERSION > targetMajor
+                                || (MAJOR_VERSION == targetMajor && MINOR_VERSION > targetMinor)) {
                             pass = true;
                         }
                     }
                     case "<" -> {
-                        if (MAJOR_VERSION < targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION < targetMinor)) {
+                        if (MAJOR_VERSION < targetMajor
+                                || (MAJOR_VERSION == targetMajor && MINOR_VERSION < targetMinor)) {
                             pass = true;
                         }
                     }
                     case ">=" -> {
-                        if (MAJOR_VERSION > targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION >= targetMinor)) {
+                        if (MAJOR_VERSION > targetMajor
+                                || (MAJOR_VERSION == targetMajor && MINOR_VERSION >= targetMinor)) {
                             pass = true;
                         }
                     }
                     case "<=" -> {
-                        if (MAJOR_VERSION < targetMajor || (MAJOR_VERSION == targetMajor && MINOR_VERSION <= targetMinor)) {
+                        if (MAJOR_VERSION < targetMajor
+                                || (MAJOR_VERSION == targetMajor && MINOR_VERSION <= targetMinor)) {
                             pass = true;
                         }
                     }
@@ -260,7 +264,14 @@ public abstract class YamlReader<T> {
                         int current = config.config().getInt(splits[2]);
                         int destination = Integer.parseInt(splits[3]);
 
-                        if (!intCheck(splits[1], key, "config.int", current, destination, (op) -> "requires configuration option " + configKey + op + splits[3] + " to be registered", warn)) {
+                        if (!intCheck(
+                                splits[1],
+                                key,
+                                "config.int",
+                                current,
+                                destination,
+                                (op) -> "Needs the config value of " + configKey + op + splits[3] + ", so that it can be registered",
+                                warn)) {
                             return false;
                         }
                     }
@@ -270,9 +281,18 @@ public abstract class YamlReader<T> {
         return true;
     }
 
-    private boolean intCheck(String operator, String key, String regParam, int current, int destination, Function<String, String> msg, boolean warn) {
+    private boolean intCheck(
+            String operator,
+            String key,
+            String regParam,
+            int current,
+            int destination,
+            Function<String, String> msg,
+            boolean warn) {
         String operation = "";
-        boolean b = switch (operator) {
+      
+        boolean b = 
+          switch (operator) {
             case ">" -> {
                 operation = "greater than";
                 yield current > destination;

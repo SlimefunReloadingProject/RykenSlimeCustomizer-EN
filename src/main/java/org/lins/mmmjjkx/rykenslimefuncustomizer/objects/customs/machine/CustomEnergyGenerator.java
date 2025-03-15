@@ -21,7 +21,18 @@ public class CustomEnergyGenerator extends CustomMachine implements EnergyNetPro
     private final ScriptEval eval;
     private final int defaultOutput;
 
-    public CustomEnergyGenerator(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe, @Nullable CustomMenu menu, List<Integer> input, List<Integer> output, MachineRecord record, EnergyNetComponentType type, @Nullable ScriptEval eval, int defaultOutput) {
+    public CustomEnergyGenerator(
+            ItemGroup itemGroup,
+            SlimefunItemStack item,
+            RecipeType recipeType,
+            ItemStack[] recipe,
+            @Nullable CustomMenu menu,
+            List<Integer> input,
+            List<Integer> output,
+            MachineRecord record,
+            EnergyNetComponentType type,
+            @Nullable ScriptEval eval,
+            int defaultOutput) {
         super(itemGroup, item, recipeType, recipe, menu, input, output, record, type, eval);
 
         this.eval = eval;
