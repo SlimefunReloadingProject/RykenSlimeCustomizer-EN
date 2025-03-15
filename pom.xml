@@ -92,10 +92,6 @@
 			<url>https://repo.alessiodp.com/releases/</url>
 		</repository>
 		<repository>
-			<id>jitpack</id>
-			<url>https://jitpack.io</url>
-		</repository>
-		<repository>
 			<id>minebench-repo</id>
 			<url>https://repo.minebench.de/</url>
 		</repository>
