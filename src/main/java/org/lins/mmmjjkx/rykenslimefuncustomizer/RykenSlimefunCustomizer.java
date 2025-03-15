@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+
+import io.github.thebusybiscuit.slimefun4.libraries.dough.updater.BlobBuildUpdater;
 import net.byteflux.libby.BukkitLibraryManager;
 import net.byteflux.libby.Library;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +17,7 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.listeners.BlockListener;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.listeners.SingleItemRecipeGuideListener;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
+import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.Metrics;
 
 public final class RykenSlimefunCustomizer extends JavaPlugin implements SlimefunAddon {
     private static boolean runtime = false;
@@ -49,14 +52,14 @@ public final class RykenSlimefunCustomizer extends JavaPlugin implements Slimefu
 
         ExceptionHandler.info("RykenSlimeCustomizer loaded successfully！");
 
-        /*
         if (getConfig().getBoolean("pluginUpdate")
-                && getDescription().getVersion().startsWith("b")
-                && getServer().getPluginManager().isPluginEnabled("GuizhanLibPlugin")) {
-            GuizhanUpdater.start(this, getFile(), "SlimefunReloadingProject", "RykenSlimeCustomizer", "main");
+                && getDescription().getVersion().startsWith("Dev")
+                ) {
+            BlobBuildUpdater updater = new BlobBuildUpdater(this, getFile(), "RykenSlimeCustomizer");
+            updater.start();
         }
 
-         */
+        new Metrics(this, 25095);
 
         getServer().getScheduler().runTaskLater(this, () -> runtime = true, 1);
     }
@@ -204,7 +207,6 @@ public final class RykenSlimefunCustomizer extends JavaPlugin implements Slimefu
         libraryManager.loadLibrary(truffleEnterprise);
         libraryManager.loadLibrary(truffleRuntime);
 
-        libraryManager.loadLibrary(icu4j);
         libraryManager.loadLibrary(httpCore);
         libraryManager.loadLibrary(httpCore_h2);
         libraryManager.loadLibrary(httpClient);
