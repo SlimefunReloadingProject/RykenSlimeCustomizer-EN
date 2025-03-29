@@ -106,16 +106,16 @@ public class GeoResourceReader extends YamlReader<GEOResource> {
                             if (split.length == 2) {
                                 int min = Integer.parseInt(split[0]);
                                 int max = Integer.parseInt(split[1]);
-                                DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon, min, max));
+                                DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, min, max));
                             } else {
                                 ExceptionHandler.handleError("Found an error while loading the geo resource " + s
                                         + " in addon " + addon.getAddonId()
                                         + ": Invalid drop amount range format! The amount will using 1 instead.");
-                                DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon));
+                                DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon));
                             }
                         }
                     } else {
-                        DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon, amount, amount));
+                        DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, amount, amount));
                     }
                 } else {
                     ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载自然资源" + s + "时遇到了问题: " + "指定掉落方块材料类型"
@@ -184,7 +184,7 @@ public class GeoResourceReader extends YamlReader<GEOResource> {
 
             @NotNull @Override
             public ItemStack getItem() {
-                return item;
+                return item.item();
             }
 
             @Override

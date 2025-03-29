@@ -109,7 +109,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                 return null;
             }
 
-            CommonUtils.addLore(sfis, true, CMIChatColor.translate("&8⇨ &e⚡ &70 / " + energyCapacity + " J"));
+            CommonUtils.addLore((ItemStack) CommonUtils.DELEGATE.get(sfis), true, CMIChatColor.translate("&8⇨ &e⚡ &70 / " + energyCapacity + " J"));
 
             instance = new CustomEnergyItem(group.getSecondValue(), sfis, rt, itemStacks, (float) energyCapacity, eval);
         } else if (section.getBoolean("placeable", false)) {
@@ -229,16 +229,16 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                         if (split.length == 2) {
                             int min = Integer.parseInt(split[0]);
                             int max = Integer.parseInt(split[1]);
-                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon, min, max));
+                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, min, max));
                         } else {
                             ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
                                     + addon.getAddonId() + ": " + "Invalid drop amount range '" + between
                                     + "' The drop amount will use 1 instead.");
-                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon));
+                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon));
                         }
                     }
                 } else {
-                    DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis, chance, addon, amount, amount));
+                    DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, amount, amount));
                 }
             } else {
                 ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
@@ -295,7 +295,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
 
         boolean energy = section.contains("energy_capacity");
 
-        CommonUtils.addLore(original, true, CMIChatColor.translate(radioactivity.getLore()));
+        CommonUtils.addLore((ItemStack) CommonUtils.DELEGATE.get(original), true, CMIChatColor.translate(radioactivity.getLore()));
 
         BaseRadiationItem instance;
 
@@ -379,16 +379,16 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                         if (split.length == 2) {
                             int min = Integer.parseInt(split[0]);
                             int max = Integer.parseInt(split[1]);
-                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(original, chance, addon, min, max));
+                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(original.item(), chance, addon, min, max));
                         } else {
                             ExceptionHandler.handleError("Found an error while loading item " + id + " in addon "
                                     + addon.getAddonId() + ": " + "Invalid drop amount range '" + between
                                     + "' The drop amount will use 1 instead.");
-                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(original, chance, addon));
+                            DropFromBlock.addDrop(material, new DropFromBlock.Drop(original.item(), chance, addon));
                         }
                     }
                 } else {
-                    DropFromBlock.addDrop(material, new DropFromBlock.Drop(original, chance, addon, amount, amount));
+                    DropFromBlock.addDrop(material, new DropFromBlock.Drop(original.item(), chance, addon, amount, amount));
                 }
             } else {
                 ExceptionHandler.handleError("Found an error while loading item " + id + " in addon "

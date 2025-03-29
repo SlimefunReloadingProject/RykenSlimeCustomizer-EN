@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -38,6 +40,16 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.ProjectAddon;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.item.RSCItemStack;
 
 public class CommonUtils {
+    public static final VarHandle DELEGATE;
+
+    static {
+        try {
+            DELEGATE = MethodHandles.lookup().findVarHandle(SlimefunItemStack.class, "delegate", ItemStack.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static ItemStack doGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.LUCK, 1);
         item.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -112,24 +124,24 @@ public class CommonUtils {
                 PlayerSkin playerSkin = PlayerSkin.fromHashCode(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "skull_base64", "skull" -> {
                 PlayerSkin playerSkin = PlayerSkin.fromBase64(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "skull_url" -> {
                 PlayerSkin playerSkin = PlayerSkin.fromURL(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "slimefun" -> {
                 SlimefunItemStack sfis = addon.getPreloadItems().get(material);
                 if (sfis != null) {
-                    itemStack = sfis.clone();
+                    itemStack = sfis.item();
                     itemStack.editMeta(m -> {
                         if (!name.isBlank()) {
                             m.setDisplayName(name);
@@ -155,7 +167,7 @@ public class CommonUtils {
                         });
                     } else {
                         ExceptionHandler.handleError("Cannot find Slimefun item " + material + ", using stone instead");
-                        itemStack = new CustomItemStack(Material.STONE, name, lore);
+                        itemStack = CustomItemStack.create(Material.STONE, name, lore);
                     }
                 }
             }
@@ -164,7 +176,7 @@ public class CommonUtils {
                 if (!file.exists()) {
                     ExceptionHandler.handleError(
                             "The saved item file " + material + " is not found, using stone instead");
-                    itemStack = new CustomItemStack(Material.STONE, name, lore);
+                    itemStack = CustomItemStack.create(Material.STONE, name, lore);
                     break;
                 }
 
@@ -195,9 +207,9 @@ public class CommonUtils {
                 YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
                 itemStack = new RSCItemStack(
-                        configuration.getItemStack("item", new CustomItemStack(Material.STONE, name, lore)),
+                        configuration.getItemStack("item", CustomItemStack.create(Material.STONE, name, lore)),
                         name,
-                        lore);
+                        lore).getItem();
 
                 if (itemStack.getAmount() > 1 && !countable) {
                     itemStack.setAmount(1);
@@ -257,7 +269,7 @@ public class CommonUtils {
                     ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取材料" + material + "，已转为石头");
                 }
 
-                itemStack = new CustomItemStack(mat, name, lore);
+                itemStack = CustomItemStack.create(mat, name, lore);
             }
         }
 

@@ -17,7 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 public class AdvancedAnimalGrowthAccelerator extends AbstractGrowthAccelerator {
-    private static final ItemStack organicFood = ItemStackWrapper.wrap(SlimefunItems.ORGANIC_FOOD);
+    private static final ItemStack organicFood = ItemStackWrapper.wrap(SlimefunItems.ORGANIC_FOOD.item());
 
     private final int capacity;
     private final int radius;

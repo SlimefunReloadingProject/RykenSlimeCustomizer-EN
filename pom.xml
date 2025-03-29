@@ -166,10 +166,11 @@
 			<version>1.18.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>com.github.Slimefun</groupId>
+			<groupId>.com.github.Slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>RC-37</version>
+			<version>experimental-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

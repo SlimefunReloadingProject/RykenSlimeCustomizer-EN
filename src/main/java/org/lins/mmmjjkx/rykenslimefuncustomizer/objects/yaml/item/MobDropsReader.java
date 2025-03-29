@@ -3,7 +3,6 @@ package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.yaml.item;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.collections.Pair;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import java.util.List;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -78,7 +77,8 @@ public class MobDropsReader extends YamlReader<CustomMobDrop> {
                     .append(LegacyComponentSerializer.legacyAmpersand()
                             .deserialize(" &awill have a chance of &b" + chance + "% &ato drop"));
 
-            ItemStack itemStack = new CustomItemStack(eggMaterial, meta -> {
+            ItemStack itemStack = new ItemStack(eggMaterial);
+            itemStack.editMeta(meta -> {
                 meta.setDisplayName(entityType.toString());
                 meta.lore(List.of(lore));
             });

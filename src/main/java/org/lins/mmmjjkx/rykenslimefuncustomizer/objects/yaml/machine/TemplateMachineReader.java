@@ -133,8 +133,7 @@ public class TemplateMachineReader extends YamlReader<CustomTemplateMachine> {
             SlimefunItemStack item = getPreloadItem(key) == null
                     ? SlimefunItem.getById(key) == null
                             ? null
-                            : ((SlimefunItemStack)
-                                    SlimefunItem.getById(key).getItem().clone())
+                            : new SlimefunItemStack(key, SlimefunItem.getById(key).getItem().clone())
                     : getPreloadItem(key);
 
             if (item == null) {
@@ -146,7 +145,7 @@ public class TemplateMachineReader extends YamlReader<CustomTemplateMachine> {
 
             List<CustomMachineRecipe> recipes =
                     readRecipes(s, inputSize, outputSize, section.getConfigurationSection(key), addon);
-            list.add(new MachineTemplate(item, recipes));
+            list.add(new MachineTemplate(item.item(), recipes));
         }
 
         return list;

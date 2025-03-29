@@ -64,9 +64,9 @@ public class CustomWorkbench extends AContainer implements EnergyNetComponent, R
     private final ScriptEval eval;
 
     public static final ItemStack RECIPE_INPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Input", "", "&2> &aClick to view");
+            CustomItemStack.create(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Input", "", "&2> &aClick to view");
     public static final ItemStack RECIPE_OUTPUT =
-            new CustomItemStack(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Output", "", "&2> &aClick to view");
+            CustomItemStack.create(Material.GREEN_STAINED_GLASS_PANE, "&aMulti-Item Output", "", "&2> &aClick to view");
 
     @Getter
     @Nullable private final CustomMenu menu;

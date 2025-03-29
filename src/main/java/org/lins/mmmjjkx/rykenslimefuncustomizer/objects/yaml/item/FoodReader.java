@@ -98,7 +98,7 @@ public class FoodReader extends YamlReader<CustomFood> {
         final float finalSaturation = saturation;
         final float finalEatSeconds = eatseconds;
 
-        NBT.modify(sfis, nbt -> {
+        NBT.modify((ItemStack) CommonUtils.DELEGATE.get(sfis), nbt -> {
             nbt.setInteger("nutrition", finalNutrition);
             nbt.setFloat("saturation", finalSaturation);
             nbt.setBoolean("can_always_eat", alwaysEatable);

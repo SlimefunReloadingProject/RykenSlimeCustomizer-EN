@@ -43,7 +43,6 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.machine.MachineTemplate;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.slimefun.AsyncChanceRecipeTask;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 
-@SuppressWarnings("deprecation")
 public class SingleItemRecipeGuideListener implements Listener {
     private static final NamespacedKey RECIPE_KEY = new NamespacedKey(RykenSlimefunCustomizer.INSTANCE, "rsc_recipe");
     private static final NamespacedKey RECIPE_INDEX_KEY =
@@ -296,7 +295,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                 rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
             }
 
-            progressBar = new CustomItemStack(progressBar, rawName);
+            progressBar = CustomItemStack.create(progressBar, rawName);
 
             addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
         }
@@ -419,7 +418,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                     rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
                 }
 
-                progressBar = new CustomItemStack(progressBar, rawName);
+                progressBar = CustomItemStack.create(progressBar, rawName);
 
                 addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
             }
@@ -591,7 +590,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                 rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
             }
 
-            progressBar = new CustomItemStack(progressBar, rawName);
+            progressBar = CustomItemStack.create(progressBar, rawName);
 
             addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
         }

@@ -22,7 +22,7 @@ import org.bukkit.block.data.type.Sapling;
 import org.bukkit.inventory.ItemStack;
 
 public class AdvancedTreeGrowthAccelerator extends AbstractGrowthAccelerator {
-    private static final ItemStack organicFertilizer = ItemStackWrapper.wrap(SlimefunItems.FERTILIZER);
+    private static final ItemStack organicFertilizer = ItemStackWrapper.wrap(SlimefunItems.FERTILIZER.item());
 
     private final int capacity;
     private final int radius;
