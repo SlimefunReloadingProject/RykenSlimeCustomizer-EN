@@ -44,7 +44,7 @@ public class CommonUtils {
 
     static {
         try {
-            DELEGATE = MethodHandles.lookup().findVarHandle(SlimefunItemStack.class, "delegate", ItemStack.class);
+            DELEGATE = MethodHandles.privateLookupIn(SlimefunItemStack.class, MethodHandles.lookup()).findVarHandle(SlimefunItemStack.class, "delegate", ItemStack.class);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
