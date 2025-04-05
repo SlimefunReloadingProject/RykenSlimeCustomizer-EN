@@ -198,7 +198,7 @@ public class CustomMaterialGenerator extends SlimefunItem
                 if (blockMenu.hasViewer()) {
                     if (statusSlot > -1) {
                         blockMenu.replaceExistingItem(
-                                statusSlot, CustomItemStack.create(Material.ORANGE_STAINED_GLASS_PANE, "&c空间不足"));
+                                statusSlot, CustomItemStack.create(Material.ORANGE_STAINED_GLASS_PANE, "&cNo enough space"));
                     }
                 }
             }
