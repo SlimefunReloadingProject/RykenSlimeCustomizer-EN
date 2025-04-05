@@ -44,8 +44,6 @@ public class JavaScriptEval extends ScriptEval {
 
         contextInit();
 
-        this.addon = addon;
-
         addon.getScriptEvals().add(this);
     }
 
@@ -130,10 +128,10 @@ public class JavaScriptEval extends ScriptEval {
         } catch (IllegalStateException e) {
             String message = e.getMessage();
             if (!message.contains("Multi threaded access")) {
-                ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
+                ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + getAddon().getAddonName(), e);
             }
         } catch (Throwable e) {
-            ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
+            ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + getAddon().getAddonName(), e);
         }
 
         return null;
