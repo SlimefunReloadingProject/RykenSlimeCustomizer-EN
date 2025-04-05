@@ -1,4 +1,4 @@
-name: RykenSlimefunCustomizer
+name: RykenSlimeCustomizer
 version: '${project.version}'
 main: org.lins.mmmjjkx.rykenslimefuncustomizer.RykenSlimefunCustomizer
 api-version: '1.19'

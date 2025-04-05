@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -45,6 +47,16 @@ public class CommonUtils {
             "SCUTE", "TURTLE_SCUTE",
             "TURTLE_SCUTE", "SCUTE"
     );
+
+    public static final VarHandle DELEGATE;
+
+    static {
+        try {
+            DELEGATE = MethodHandles.privateLookupIn(SlimefunItemStack.class, MethodHandles.lookup()).findVarHandle(SlimefunItemStack.class, "delegate", ItemStack.class);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static ItemStack doGlow(ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.LUCK, 1);
@@ -89,7 +101,7 @@ public class CommonUtils {
         String type = section.getString("material_type", "mc");
 
         if (!type.equalsIgnoreCase("none") && !section.contains("material")) {
-            ExceptionHandler.handleError("你设置了材料类型，但没有设置对应的材料！");
+            ExceptionHandler.handleError("You need to specify a material for the item in " + section.getCurrentPath());
             return null;
         }
 
@@ -120,24 +132,24 @@ public class CommonUtils {
                 PlayerSkin playerSkin = PlayerSkin.fromHashCode(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "skull_base64", "skull" -> {
                 PlayerSkin playerSkin = PlayerSkin.fromBase64(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "skull_url" -> {
                 PlayerSkin playerSkin = PlayerSkin.fromURL(material);
                 ItemStack head = PlayerHead.getItemStack(playerSkin);
 
-                itemStack = new RSCItemStack(head, name, lore);
+                itemStack = new RSCItemStack(head, name, lore).getItem();
             }
             case "slimefun" -> {
                 SlimefunItemStack sfis = addon.getPreloadItems().get(material);
                 if (sfis != null) {
-                    itemStack = sfis.clone();
+                    itemStack = sfis.item();
                     itemStack.editMeta(m -> {
                         if (!name.isBlank()) {
                             m.setDisplayName(name);
@@ -162,16 +174,17 @@ public class CommonUtils {
                             }
                         });
                     } else {
-                        ExceptionHandler.handleError("无法找到粘液物品" + material + "，已转为石头");
-                        itemStack = new CustomItemStack(Material.STONE, name, lore);
+                        ExceptionHandler.handleError("Cannot find Slimefun item " + material + ", using stone instead");
+                        itemStack = CustomItemStack.create(Material.STONE, name, lore);
                     }
                 }
             }
             case "saveditem" -> {
                 File file = new File(addon.getSavedItemsFolder(), material + ".yml");
                 if (!file.exists()) {
-                    ExceptionHandler.handleError("保存物品的文件" + material + "不存在，已转为石头");
-                    itemStack = new CustomItemStack(Material.STONE, name, lore);
+                    ExceptionHandler.handleError(
+                            "The saved item file " + material + " is not found, using stone instead");
+                    itemStack = CustomItemStack.create(Material.STONE, name, lore);
                     break;
                 }
 
@@ -202,9 +215,9 @@ public class CommonUtils {
                 YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
                 itemStack = new RSCItemStack(
-                        configuration.getItemStack("item", new CustomItemStack(Material.STONE, name, lore)),
+                        configuration.getItemStack("item", CustomItemStack.create(Material.STONE, name, lore)),
                         name,
-                        lore);
+                        lore).getItem();
 
                 if (itemStack.getAmount() > 1 && !countable) {
                     itemStack.setAmount(1);
@@ -231,7 +244,7 @@ public class CommonUtils {
                     }
                 }
 
-                itemStack = new CustomItemStack(mat, name, lore);
+                itemStack = CustomItemStack.create(mat, name, lore);
             }
         }
 
@@ -244,8 +257,8 @@ public class CommonUtils {
 
         if (countable) {
             if (amount > 64 || amount < -1) {
-                ExceptionHandler.handleError(
-                        "无法在附属" + addon.getAddonId() + "中读取" + section.getCurrentPath() + "的物品: 物品数量不能大于64或小于-1");
+                ExceptionHandler.handleError("Cannot read item in " + section.getCurrentPath() + " in a addon called "
+                        + addon.getAddonId() + ": the amount must be between 0 and 64");
                 return null;
             }
             itemStack.setAmount(amount);
@@ -256,7 +269,8 @@ public class CommonUtils {
             for (String enchant : enchants) {
                 String[] s2 = enchant.split(" ");
                 if (s2.length != 2) {
-                    ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取物品附魔" + enchant + ", 跳过添加此附魔");
+                    ExceptionHandler.handleError("Cannot read enchantment " + enchant + " in a addon called "
+                            + addon.getAddonId() + ", skip adding this enchantment");
                     continue;
                 }
 
@@ -265,7 +279,8 @@ public class CommonUtils {
 
                 Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(enchantName.toLowerCase()));
                 if (enchantment == null) {
-                    ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取物品附魔" + enchant + ", 跳过添加此附魔");
+                    ExceptionHandler.handleError("Cannot find enchantment " + enchantName + " in a addon called "
+                            + addon.getAddonId() + ", skip adding this enchantment");
                     continue;
                 }
 
@@ -330,7 +345,8 @@ public class CommonUtils {
             return;
         }
         if (stream == null) {
-            ExceptionHandler.handleError("无法找到文件" + resourceFile + "，请检查插件文件是否损坏！");
+            ExceptionHandler.handleError(
+                    "Cannot synchronize " + resourceFile + ", please check the plugin is not corrupted!");
             return;
         }
         try {
@@ -342,7 +358,8 @@ public class CommonUtils {
             configuration2.save(file);
         } catch (Exception e) {
             e.printStackTrace();
-            ExceptionHandler.handleError("无法完成文件" + resourceFile + "的同步，请检查插件文件是否损坏！");
+            ExceptionHandler.handleError(
+                    "Cannot synchronize " + resourceFile + ", please check the plugin is not corrupted!");
         }
     }
 

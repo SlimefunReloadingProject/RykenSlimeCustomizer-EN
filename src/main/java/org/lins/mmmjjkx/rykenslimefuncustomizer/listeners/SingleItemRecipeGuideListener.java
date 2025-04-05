@@ -43,7 +43,6 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.machine.MachineTemplate;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.slimefun.AsyncChanceRecipeTask;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.CommonUtils;
 
-@SuppressWarnings("deprecation")
 public class SingleItemRecipeGuideListener implements Listener {
     private static final NamespacedKey RECIPE_KEY = new NamespacedKey(RykenSlimefunCustomizer.INSTANCE, "rsc_recipe");
     private static final NamespacedKey RECIPE_INDEX_KEY =
@@ -216,7 +215,11 @@ public class SingleItemRecipeGuideListener implements Listener {
 
                 profile.ifPresent(prof -> addItem(
                         0,
-                        ChestMenuUtils.getBackButton(p, "", "&f左键: &7返回上一页", "&fShift + 左键: &7返回主菜单"),
+                        ChestMenuUtils.getBackButton(
+                                p,
+                                "",
+                                "&fLeft click: &7back to previous page",
+                                "&fShift + left click: &7back to the main menu"),
                         (pl, s, is, action) -> {
                             SurvivalSlimefunGuide guide = new SurvivalSlimefunGuide(false, false);
                             GuideHistory history = prof.getGuideHistory();
@@ -241,7 +244,6 @@ public class SingleItemRecipeGuideListener implements Listener {
 
             if (recipe instanceof CustomMachineRecipe rmr) {
                 int outputSlot = outputSlots[0];
-                List<ItemStack> inputs = List.of(rmr.getInput());
                 ItemStack[] outputs = recipe.getOutput();
                 if (rmr.isChooseOneIfHas()) {
                     List<ItemStack> taggedChanceOutputs = new ArrayList<>();
@@ -265,7 +267,10 @@ public class SingleItemRecipeGuideListener implements Listener {
                             ItemStack chanceOutput = originalOutput.clone();
                             if (chance < 100) {
                                 CommonUtils.addLore(
-                                        chanceOutput, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+                                        chanceOutput,
+                                        true,
+                                        CMIChatColor.translate(
+                                                "&aThere's a &b " + chance + "% &aprobability of producing"));
                             }
 
                             if (chance > 0) {
@@ -284,13 +289,13 @@ public class SingleItemRecipeGuideListener implements Listener {
             }
 
             int seconds = recipe.getTicks() / 2;
-            String rawName = "&e制作时间: &b" + seconds + "&es";
+            String rawName = "&eProduction time: &b" + seconds + "&es";
 
             if (seconds > 60) {
                 rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
             }
 
-            progressBar = new CustomItemStack(progressBar, rawName);
+            progressBar = CustomItemStack.create(progressBar, rawName);
 
             addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
         }
@@ -306,7 +311,8 @@ public class SingleItemRecipeGuideListener implements Listener {
 
         private ItemStack tagOutputChance(ItemStack item, int chance) {
             item = item.clone();
-            CommonUtils.addLore(item, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+            CommonUtils.addLore(
+                    item, true, CMIChatColor.translate("&aThere's a &b " + chance + "% &aprobability of producing"));
             return item;
         }
     }
@@ -316,8 +322,6 @@ public class SingleItemRecipeGuideListener implements Listener {
 
         public TemplateRecipeMenu(CustomTemplateMachine ctm, Player p, int templateIndex, int recipeIndex) {
             super(Slimefun.getLocalization().getMessage(p, "guide.title.main"));
-
-            Optional<PlayerProfile> profile = PlayerProfile.find(p);
 
             setEmptySlotsClickable(false);
             setPlayerInventoryClickable(false);
@@ -351,7 +355,7 @@ public class SingleItemRecipeGuideListener implements Listener {
 
             int seconds = recipe.getTicks() / 2;
             ItemStack templateItem = template.template().clone();
-            CommonUtils.addLore(templateItem, true, "&d&l&o*模板物品不消耗*");
+            CommonUtils.addLore(templateItem, true, "&d&l&o*Template item doesn't consuming*");
             addItem(templateSlot, templateItem, (pl, s, is, action) -> false);
 
             if (inputSlots.length != 0 && recipe.getInput().length != 0) {
@@ -394,7 +398,10 @@ public class SingleItemRecipeGuideListener implements Listener {
                         ItemStack chanceOutput = originalOutput.clone();
                         if (chance < 100) {
                             CommonUtils.addLore(
-                                    chanceOutput, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+                                    chanceOutput,
+                                    true,
+                                    CMIChatColor.translate(
+                                            "&aThere's a &b " + chance + "% &aprobability of producing"));
                         }
 
                         if (chance > 0) {
@@ -405,13 +412,13 @@ public class SingleItemRecipeGuideListener implements Listener {
             }
 
             if (progressSlot >= 0 && progressBar != null) {
-                String rawName = "&e制作时间: &b" + seconds + "&es";
+                String rawName = "&eProduction time: &b" + seconds + "&es";
 
                 if (seconds > 60) {
                     rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
                 }
 
-                progressBar = new CustomItemStack(progressBar, rawName);
+                progressBar = CustomItemStack.create(progressBar, rawName);
 
                 addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
             }
@@ -428,7 +435,8 @@ public class SingleItemRecipeGuideListener implements Listener {
 
         private ItemStack tagOutputChance(ItemStack item, int chance) {
             item = item.clone();
-            CommonUtils.addLore(item, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+            CommonUtils.addLore(
+                    item, true, CMIChatColor.translate("&aThere's a &b " + chance + "% &aprobability of producing"));
             return item;
         }
     }
@@ -582,7 +590,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                 rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
             }
 
-            progressBar = new CustomItemStack(progressBar, rawName);
+            progressBar = CustomItemStack.create(progressBar, rawName);
 
             addItem(progressSlot, progressBar, (pl, s, is, action) -> false);
         }

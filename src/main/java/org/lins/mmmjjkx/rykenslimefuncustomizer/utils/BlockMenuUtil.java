@@ -15,7 +15,7 @@ import org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.LinkedOutput;
 
 @UtilityClass
 public class BlockMenuUtil {
-    @Nullable public static ItemStack pushItem(@Nonnull BlockMenu blockMenu, @Nonnull ItemStack item, int... slots) {
+    @Nullable public static ItemStack pushItem(@Nonnull BlockMenu blockMenu, ItemStack item, int... slots) {
         if (item == null || item.getType() == Material.AIR) {
             throw new IllegalArgumentException("Cannot push null or AIR");
         }
@@ -54,7 +54,7 @@ public class BlockMenuUtil {
         }
 
         if (leftAmount > 0) {
-            return new CustomItemStack(item, leftAmount);
+            return CustomItemStack.create(item, leftAmount);
         } else {
             return null;
         }
@@ -62,7 +62,7 @@ public class BlockMenuUtil {
 
     @Nonnull
     public static Map<ItemStack, Integer> pushItem(
-            @Nonnull BlockMenu blockMenu, @Nonnull ItemStack[] items, int... slots) {
+            @Nonnull BlockMenu blockMenu, ItemStack[] items, int... slots) {
         if (items == null || items.length == 0) {
             throw new IllegalArgumentException("Cannot push null or empty array");
         }

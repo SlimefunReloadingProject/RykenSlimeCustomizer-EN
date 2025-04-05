@@ -28,7 +28,7 @@ public class AdvancedAutoAnvil extends AutoAnvil {
             ItemStack ductTape = menu.getItemInSlot(slot == this.getInputSlots()[0] ? this.getInputSlots()[1] : this.getInputSlots()[0]);
             ItemStack item = menu.getItemInSlot(slot);
             if (item != null && item.getType().getMaxDurability() > 0 && ((Damageable)item.getItemMeta()).getDamage() > 0) {
-                if (SlimefunUtils.isItemSimilar(ductTape, SlimefunItems.DUCT_TAPE, true, false)) {
+                if (SlimefunUtils.isItemSimilar(ductTape, SlimefunItems.DUCT_TAPE.item(), true, false)) {
                     ItemStack repairedItem = this.repair(item);
                     if (!menu.fits(repairedItem, this.getOutputSlots())) {
                         return null;

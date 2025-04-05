@@ -9,7 +9,6 @@ import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuideMode;
 import io.github.thebusybiscuit.slimefun4.core.services.sounds.SoundEffect;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.guide.SurvivalSlimefunGuide;
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.lins.mmmjjkx.rykenslimefuncustomizer.utils.ExceptionHandler;
 
 public class AdvancedNestedItemGroup extends NestedItemGroup {
@@ -28,13 +28,13 @@ public class AdvancedNestedItemGroup extends NestedItemGroup {
     public AdvancedNestedItemGroup(NamespacedKey key, ItemStack item, int tier) {
         super(key, item, tier);
 
-        ExceptionHandler.debugLog("创建物品组: " + key);
+        ExceptionHandler.debugLog("Creating AdvancedNestedItemGroup with key: " + key);
 
         subGroups = new ArrayList<>();
     }
 
     @Override
-    public void open(Player p, PlayerProfile profile, SlimefunGuideMode mode) {
+    public void open(@NotNull Player p, @NotNull PlayerProfile profile, @NotNull SlimefunGuideMode mode) {
         setup(p, profile, mode, 1);
     }
 
@@ -50,7 +50,6 @@ public class AdvancedNestedItemGroup extends NestedItemGroup {
         this.subGroups.remove(group);
     }
 
-    @SuppressWarnings("deprecation")
     private void setup(Player p, PlayerProfile profile, SlimefunGuideMode mode, int page) {
         GuideHistory history = profile.getGuideHistory();
         if (mode == SlimefunGuideMode.SURVIVAL_MODE) {
@@ -67,8 +66,8 @@ public class AdvancedNestedItemGroup extends NestedItemGroup {
         guide.createHeader(p, profile, menu);
         menu.addItem(
                 1,
-                new CustomItemStack(ChestMenuUtils.getBackButton(
-                        p, "", ChatColor.GRAY + Slimefun.getLocalization().getMessage(p, "guide.back.guide"))));
+                ChestMenuUtils.getBackButton(
+                        p, "", ChatColor.GRAY + Slimefun.getLocalization().getMessage(p, "guide.back.guide")));
         menu.addMenuClickHandler(1, (pl, s, is, action) -> {
             SlimefunGuide.openMainMenu(profile, mode, history.getMainMenuPage());
             return false;

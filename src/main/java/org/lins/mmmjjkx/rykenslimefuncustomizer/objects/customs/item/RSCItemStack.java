@@ -1,13 +1,14 @@
 package org.lins.mmmjjkx.rykenslimefuncustomizer.objects.customs.item;
 
-import io.github.thebusybiscuit.slimefun4.libraries.dough.items.CustomItemStack;
 import java.util.List;
 import org.bukkit.inventory.ItemStack;
 
 @SuppressWarnings("deprecation")
-public class RSCItemStack extends CustomItemStack {
+public class RSCItemStack {
+    private final ItemStack item;
+
     public RSCItemStack(ItemStack item, String name, List<String> lore) {
-        super(item, meta -> {
+        item.editMeta(meta -> {
             if (name != null && !name.isBlank()) {
                 meta.setDisplayName(name);
             }
@@ -16,5 +17,11 @@ public class RSCItemStack extends CustomItemStack {
                 meta.setLore(lore);
             }
         });
+
+        this.item = item;
+    }
+
+    public ItemStack getItem() {
+        return item;
     }
 }

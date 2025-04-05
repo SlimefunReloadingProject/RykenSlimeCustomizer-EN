@@ -8,7 +8,6 @@ import com.oracle.truffle.js.runtime.JSRealm;
 import com.oracle.truffle.js.runtime.objects.JSAttributes;
 import com.oracle.truffle.js.runtime.objects.JSObject;
 import com.oracle.truffle.js.runtime.objects.JSObjectUtil;
-import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.player.PlayerProfile;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
@@ -45,6 +44,8 @@ public class JavaScriptEval extends ScriptEval {
 
         contextInit();
 
+        this.addon = addon;
+
         addon.getScriptEvals().add(this);
     }
 
@@ -53,7 +54,6 @@ public class JavaScriptEval extends ScriptEval {
         TruffleLanguage.Env env = realm.getEnv();
         addThing("SlimefunItems", env.asHostSymbol(SlimefunItems.class));
         addThing("SlimefunItem", env.asHostSymbol(SlimefunItem.class));
-        addThing("StorageCacheUtils", env.asHostSymbol(StorageCacheUtils.class));
         addThing("SlimefunUtils", env.asHostSymbol(SlimefunUtils.class));
         addThing("BlockMenu", env.asHostSymbol(BlockMenu.class));
         addThing("BlockMenuUtil", env.asHostSymbol(BlockMenuUtil.class));
@@ -125,17 +125,15 @@ public class JavaScriptEval extends ScriptEval {
 
         try {
             Object result = member.execute(args);
-            ExceptionHandler.debugLog("运行了 " + getAddon().getAddonName() + "的脚本" + getFile().getName() + "中的函数 " + funName);
+            ExceptionHandler.debugLog("Run function " + funName + " in file " + getFile().getName() + " of addon " + getAddon().getAddonName());
             return result;
         } catch (IllegalStateException e) {
             String message = e.getMessage();
             if (!message.contains("Multi threaded access")) {
-                ExceptionHandler.handleError("在运行附属" + getAddon().getAddonName() + "的脚本" + getFile().getName() + "时发生错误");
-                e.printStackTrace();
+                ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
             }
         } catch (Throwable e) {
-            ExceptionHandler.handleError("在运行" + getAddon().getAddonName() + "的脚本" + getFile().getName() + "时发生意外错误");
-            e.printStackTrace();
+            ExceptionHandler.handleError("An error occcured while executing script file "+ getFile().getName() + "of addon" + addon.getAddonName(), e);
         }
 
         return null;
@@ -144,6 +142,7 @@ public class JavaScriptEval extends ScriptEval {
     private void reSetup() {
         jsEngine = Context.newBuilder("js")
                         .hostClassLoader(RykenSlimefunCustomizer.class.getClassLoader())
+                        .hostClassLoader(ClassLoader.getSystemClassLoader())
                         .allowAllAccess(true)
                         .allowHostAccess(UNIVERSAL_HOST_ACCESS)
                         .allowNativeAccess(false)

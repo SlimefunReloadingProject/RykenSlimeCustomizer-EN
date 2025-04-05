@@ -42,7 +42,7 @@ public abstract class YamlReader<T> {
 
             for (SlimefunItemStack item : items) {
                 addon.getPreloadItems().put(item.getItemId(), item);
-                ExceptionHandler.debugLog("&a已预加载物品: " + item.getItemId());
+                ExceptionHandler.debugLog("&aPreloaded item: " + item.getItemId());
             }
         }
     }
@@ -57,27 +57,27 @@ public abstract class YamlReader<T> {
             ConfigurationSection section = configuration.getConfigurationSection(key);
             if (section == null) continue;
 
-            ExceptionHandler.debugLog("开始读取项: " + key);
+            ExceptionHandler.debugLog("Starting to read item: " + key);
 
             ConfigurationSection register = section.getConfigurationSection("register");
             if (!checkForRegistration(key, register)) continue;
 
-            ExceptionHandler.debugLog("检查延迟加载...");
+            ExceptionHandler.debugLog("Checking for late initialization...");
 
             if (section.getBoolean("lateInit", false)) {
                 putLateInit(key);
-                ExceptionHandler.debugLog("检查结果：延迟加载");
+                ExceptionHandler.debugLog("Check result: no late initialization");
                 continue;
             }
 
-            ExceptionHandler.debugLog("开始读取...");
+            ExceptionHandler.debugLog("Starting to read...");
 
             var object = readEach(key);
             if (object != null) {
                 objects.add(object);
-                ExceptionHandler.debugLog("&aSUCCESS | 读取项" + key + "成功！");
+                ExceptionHandler.debugLog("&aSUCCESS | Item " + key + " read successfully!");
             } else {
-                ExceptionHandler.debugLog("&cFAILURE | 读取项" + key + "失败！");
+                ExceptionHandler.debugLog("&cFAILURE | Item " + key + " read failed!");
             }
         }
         return objects;
@@ -90,13 +90,13 @@ public abstract class YamlReader<T> {
     public List<T> loadLateInits() {
         List<T> objects = new ArrayList<>();
         lateInits.forEach(key -> {
-            ExceptionHandler.debugLog("开始读取延迟项：" + key);
+            ExceptionHandler.debugLog("Starting to read late initialization item: " + key);
             var object = readEach(key);
             if (object != null) {
                 objects.add(object);
-                ExceptionHandler.debugLog("&aSUCCESS | 读取项" + key + "成功！");
+                ExceptionHandler.debugLog("&aSUCCESS | Item " + key + " read successfully!");
             } else {
-                ExceptionHandler.debugLog("&cFAILURE | 读取项" + key + "失败！");
+                ExceptionHandler.debugLog("&cFAILURE | Item " + key + " read failed!");
             }
         });
 
@@ -121,31 +121,31 @@ public abstract class YamlReader<T> {
             String head = splits[0];
             if (head.equalsIgnoreCase("hasplugin")) {
                 if (splits.length != 2) {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: hasplugin仅需要一个参数");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": hasplugin requires only one parameter");
                     continue;
                 }
                 boolean b = Bukkit.getPluginManager().isPluginEnabled(splits[1]);
                 if (!b) {
                     if (warn) {
-                        ExceptionHandler.handleError(key + "需要服务端插件" + splits[1] + "才能被注册");
+                        ExceptionHandler.handleError(key + " requires server plugin " + splits[1] + " to be registered");
                     }
                     return false;
                 }
             } else if (head.equalsIgnoreCase("!hasplugin")) {
                 if (splits.length != 2) {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: !hasplugin仅需要一个参数");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": !hasplugin requires only one parameter");
                     continue;
                 }
                 boolean b = Bukkit.getPluginManager().isPluginEnabled(splits[1]);
                 if (b) {
                     if (warn) {
-                        ExceptionHandler.handleError(key + "需要卸载服务端插件" + splits[1] + "才能被注册(可能与其冲突？)");
+                        ExceptionHandler.handleError(key + " requires server plugin " + splits[1] + " to be uninstalled to be registered (possible conflict?)");
                     }
                     return false;
                 }
             } else if (head.equalsIgnoreCase("version")) {
                 if (splits.length != 3) {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: version需要两个参数");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version requires two parameters");
                     continue;
                 }
 
@@ -156,7 +156,7 @@ public abstract class YamlReader<T> {
                     try {
                         targetMajor = Integer.parseInt(versionSplit[1]);
                     } catch (NumberFormatException e) {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                         continue;
                     }
                 } else if (versionSplit.length == 3) {
@@ -164,11 +164,11 @@ public abstract class YamlReader<T> {
                         targetMajor = Integer.parseInt(versionSplit[1]);
                         targetMinor = Integer.parseInt(versionSplit[2]);
                     } catch (NumberFormatException e) {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                         continue;
                     }
                 } else {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 版本号" + splits[2] + "不是正常的版本号！");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version number " + splits[2] + " is not a valid version number!");
                 }
 
                 // ExceptionHandler.info("key: " + key + " condition: " + condition + " major: " + targetMajor + "
@@ -210,53 +210,53 @@ public abstract class YamlReader<T> {
                         }
                     }
                     default -> {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: version需要合法的比较符！");
+                        ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": version requires a valid comparison operator!");
                         pass = true;
                     }
                 }
                 if (!pass) {
                     if (warn) {
-                        ExceptionHandler.handleError(key + "需要服务端版本" + splits[1] + " " + splits[2] + "才能被注册");
+                        ExceptionHandler.handleError(key + " requires server version " + splits[1] + " " + splits[2] + " to be registered");
                     }
                     return false;
                 }
             } else if (head.contains("config")) {
                 CustomAddonConfig config = addon.getConfig();
                 if (config == null) {
-                    ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: 无法获取配置");
+                    ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": unable to get configuration");
                     continue;
                 }
 
                 switch (head) {
                     case "config.boolean" -> {
                         if (splits.length != 2) {
-                            ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: config.boolean需要一个参数");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.boolean requires one parameter");
                             continue;
                         }
 
                         if (!config.config().getBoolean(splits[1])) {
                             if (warn) {
-                                ExceptionHandler.handleError(key + "需要配置选项" + splits[1] + "为true才能被注册");
+                                ExceptionHandler.handleError(key + " requires configuration option " + splits[1] + " to be true to be registered");
                             }
                             return false;
                         }
                     }
                     case "config.string" -> {
                         if (splits.length != 3) {
-                            ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: config.string需要两个参数");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.string requires two parameters");
                             continue;
                         }
 
                         if (!Objects.equals(config.config().getString(splits[1]), splits[2])) {
                             if (warn) {
-                                ExceptionHandler.handleError(key + "需要配置选项" + splits[1] + "为" + splits[2] + "才能被注册");
+                                ExceptionHandler.handleError(key + " requires configuration option " + splits[1] + " to be " + splits[2] + " to be registered");
                             }
                             return false;
                         }
                     }
                     case "config.int" -> {
                         if (splits.length != 4) {
-                            ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: config.int需要三个参数");
+                            ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": config.int requires three parameters");
                             continue;
                         }
 
@@ -270,7 +270,7 @@ public abstract class YamlReader<T> {
                                 "config.int",
                                 current,
                                 destination,
-                                (op) -> "需要配置选项" + configKey + op + splits[3] + "才能被注册",
+                                (op) -> "Needs the config value of " + configKey + op + splits[3] + ", so that it can be registered",
                                 warn)) {
                             return false;
                         }
@@ -290,37 +290,38 @@ public abstract class YamlReader<T> {
             Function<String, String> msg,
             boolean warn) {
         String operation = "";
-        boolean b =
-                switch (operator) {
-                    case ">" -> {
-                        operation = "大于";
-                        yield current > destination;
-                    }
-                    case "<" -> {
-                        operation = "小于";
-                        yield current < destination;
-                    }
-                    case ">=" -> {
-                        operation = "大于或等于";
-                        yield current >= destination;
-                    }
-                    case "<=" -> {
-                        operation = "小于或等于";
-                        yield current <= destination;
-                    }
-                    case "==" -> {
-                        operation = "等于";
-                        yield current == destination;
-                    }
-                    case "!=" -> {
-                        operation = "不等于";
-                        yield current != destination;
-                    }
-                    default -> {
-                        ExceptionHandler.handleError("读取" + key + "的注册条件时发现问题: " + regParam + "需要合法的比较符！");
-                        yield true;
-                    }
-                };
+      
+        boolean b = 
+          switch (operator) {
+            case ">" -> {
+                operation = "greater than";
+                yield current > destination;
+            }
+            case "<" -> {
+                operation = "less than";
+                yield current < destination;
+            }
+            case ">=" -> {
+                operation = "greater than or equal to";
+                yield current >= destination;
+            }
+            case "<=" -> {
+                operation = "less than or equal to";
+                yield current <= destination;
+            }
+            case "==" -> {
+                operation = "equal to";
+                yield current == destination;
+            }
+            case "!=" -> {
+                operation = "not equal to";
+                yield current != destination;
+            }
+            default -> {
+                ExceptionHandler.handleError("Issue found while reading registration condition for " + key + ": " + regParam + " requires a valid comparison operator!");
+                yield true;
+            }
+        };
 
         if (!b) {
             if (warn) {
