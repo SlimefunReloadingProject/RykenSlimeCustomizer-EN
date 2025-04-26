@@ -62,7 +62,7 @@ public final class ProjectAddonManager {
 
         for (File folder : folders) {
             if (folder.isFile()) {
-                ExceptionHandler.handleError(folder.getName() + " 不是文件夹！无法加载此附属！");
+                ExceptionHandler.handleError(folder.getName() + " is not a folder! Unable to load addons!");
                 continue;
             }
 
@@ -120,7 +120,7 @@ public final class ProjectAddonManager {
                 }
             } catch (Exception e) {
                 if (folder.isFile()) {
-                    ExceptionHandler.handleError(folder.getName() + " 不是文件夹！无法加载此附属！");
+                    ExceptionHandler.handleError(folder.getName() + " is not a folder! Unable to load addon!");
                     continue;
                 }
                 e.printStackTrace();

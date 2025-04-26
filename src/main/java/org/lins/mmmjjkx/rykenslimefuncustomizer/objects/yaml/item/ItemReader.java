@@ -83,10 +83,10 @@ public class ItemReader extends YamlReader<SlimefunItem> {
             String script = section.getString("script", "");
             File file = new File(addon.getScriptsFolder(), script + ".js");
             if (!file.exists()) {
-                ExceptionHandler.handleWarning("There was an error while loading item" + s + " in addon "
-                        + addon.getAddonId() + ": " + "Could not find script file " + file.getName());
+                ExceptionHandler.handleWarning("There was an error while loading item " + s + " in addon "
+                        + addon.getAddonId() + ": Could not find script file " + file.getName());
             } else {
-                ExceptionHandler.debugLog("加载了附属" + addon.getAddonId() + "中物品" + s + "的脚本文件" + file.getName());
+                ExceptionHandler.debugLog("Loaded script file " + file.getName() + " for item " + s + " in addon " + addon.getAddonId());
                 eval = new JavaScriptEval(file, addon);
             }
         }
@@ -96,7 +96,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         boolean energy = section.contains("energy_capacity");
         boolean hasRadiation = section.contains("radiation");
 
-        // 将在粘液发布下一个正式版后删除(其实还是删不掉
+        // This will be removed after Slimefun releases the next official version (it's still not removable)
         if (hasRadiation) {
             return setupRadiationItem(section, sfis, group.getSecondValue(), s, rt, itemStacks, eval, addon);
         }
@@ -104,8 +104,8 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         if (energy) {
             double energyCapacity = section.getDouble("energy_capacity");
             if (energyCapacity < 1) {
-                ExceptionHandler.handleError("Found an error while loading item" + s + " in addon " + addon.getAddonId()
-                        + ": " + "Energy capacity must be at least 1");
+                ExceptionHandler.handleError("Found an error while loading item " + s + " in addon " + addon.getAddonId()
+                        + ": Energy capacity must be at least 1");
                 return null;
             }
 
@@ -118,14 +118,14 @@ public class ItemReader extends YamlReader<SlimefunItem> {
             String materialType = section.getString("rainbow", "");
             if (!sfis.getType().isBlock()) {
                 ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                        + addon.getAddonId() + ": " + "Rainbow attribute can only be applied to blocks");
+                        + addon.getAddonId() + ": Rainbow attribute can only be applied to blocks");
                 return null;
             }
             if (materialType.equalsIgnoreCase("CUSTOM")) {
                 List<String> materials = section.getStringList("rainbow_materials");
                 if (materials.isEmpty()) {
                     ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                            + addon.getAddonId() + ": " + "Rainbow attribute CUSTOM requires a list of materials");
+                            + addon.getAddonId() + ": Rainbow attribute CUSTOM requires a list of materials");
                     return null;
                 }
                 List<Material> colorMaterials = new ArrayList<>();
@@ -167,7 +167,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         if (section.getBoolean("anti_wither", false)) {
             if (!sfis.getType().isBlock()) {
                 ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                        + addon.getAddonId() + ": " + "Wither proof attribute can only be applied to blocks");
+                        + addon.getAddonId() + ": Wither proof attribute can only be applied to blocks");
                 return null;
             }
 
@@ -187,8 +187,8 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         if (section.contains("piglin_trade_chance")) {
             int chance = section.getInt("piglin_trade_chance", 100);
             if (chance < 0 || chance > 100) {
-                ExceptionHandler.handleError("Found an error while loading item " + s + "in addon " + addon.getAddonId()
-                        + ": " + "Piglin trade chance must be between 0 and 100. Using 100 instead.");
+                ExceptionHandler.handleError("Found an error while loading item " + s + " in addon " + addon.getAddonId()
+                        + ": Piglin trade chance must be between 0 and 100. Using 100 instead.");
                 chance = 100;
             }
 
@@ -213,7 +213,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
 
             if (chance < 0 || chance > 100) {
                 ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                        + addon.getAddonId() + ": " + "Drop chance must be between 0 and 100. Using 100 instead.");
+                        + addon.getAddonId() + ": Drop chance must be between 0 and 100. Using 100 instead.");
                 chance = 100;
             }
 
@@ -232,8 +232,8 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                             DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, min, max));
                         } else {
                             ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                                    + addon.getAddonId() + ": " + "Invalid drop amount range '" + between
-                                    + "' The drop amount will use 1 instead.");
+                                + addon.getAddonId() + ": Invalid drop amount range '" + between
+                                + "'. The drop amount will use 1 instead.");
                             DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon));
                         }
                     }
@@ -242,7 +242,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                 }
             } else {
                 ExceptionHandler.handleError("Found an error while loading item " + s + " in addon "
-                        + addon.getAddonId() + ": " + "Invalid drop material: " + dropMaterial);
+                        + addon.getAddonId() + ": Invalid drop material: " + dropMaterial);
             }
         }
 
@@ -261,7 +261,7 @@ public class ItemReader extends YamlReader<SlimefunItem> {
         ItemStack stack = CommonUtils.readItem(item, false, addon);
         if (stack == null) {
             ExceptionHandler.handleError("Found an error while loading item " + key + " in addon " + addon.getAddonId()
-                    + ": " + "The item is null or has an invalid format");
+                    + ": The item is null or has an invalid format");
             return null;
         }
 
@@ -382,8 +382,8 @@ public class ItemReader extends YamlReader<SlimefunItem> {
                             DropFromBlock.addDrop(material, new DropFromBlock.Drop(original.item(), chance, addon, min, max));
                         } else {
                             ExceptionHandler.handleError("Found an error while loading item " + id + " in addon "
-                                    + addon.getAddonId() + ": " + "Invalid drop amount range '" + between
-                                    + "' The drop amount will use 1 instead.");
+                                + addon.getAddonId() + ": " + "Invalid drop amount range '" + between
+                                + "'. The drop amount will use 1 instead.");
                             DropFromBlock.addDrop(material, new DropFromBlock.Drop(original.item(), chance, addon));
                         }
                     }

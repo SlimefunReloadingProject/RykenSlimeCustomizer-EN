@@ -93,7 +93,7 @@ public class ExceptionHandler {
     }
 
     /**
-     * 检测后门等
+     * Check backdoors simply
      * @param message the message
      */
     public static void handleDanger(String message) {

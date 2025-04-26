@@ -50,12 +50,12 @@ public class LinkedOutput {
         // log free output & linked output
         for (int i = 0; i < freeOutput.length; i++) {
             ItemStack item = freeOutput[i];
-            ExceptionHandler.info("FreeOutput: " + i + " 物品: " + item);
+            ExceptionHandler.info("FreeOutput: " + i + " Item: " + item);
         }
 
         for (int slot : linkedOutput.keySet()) {
             ItemStack item = linkedOutput.get(slot);
-            ExceptionHandler.info("LinkedOutput: " + slot + " 物品: " + item + " 位置: " + slot);
+            ExceptionHandler.info("LinkedOutput: " + slot + " Item: " + item + " Slot: " + slot);
         }
     }
 }

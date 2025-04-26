@@ -12,7 +12,7 @@ update:
   # please use the addon id, not the name!
   blocks:
     - ""
-#依赖下载仓库
+# download the dependencies
 repositories:
   - https://maven.aliyun.com/repository/public
   - https://repo1.maven.org/maven2

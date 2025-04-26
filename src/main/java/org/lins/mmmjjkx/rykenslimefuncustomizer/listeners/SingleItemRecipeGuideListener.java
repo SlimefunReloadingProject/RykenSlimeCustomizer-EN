@@ -510,7 +510,11 @@ public class SingleItemRecipeGuideListener implements Listener {
 
                 profile.ifPresent(prof -> addItem(
                         0,
-                        ChestMenuUtils.getBackButton(p, "", "&f左键: &7返回上一页", "&fShift + 左键: &7返回主菜单"),
+                        ChestMenuUtils.getBackButton(
+                                p,
+                                "",
+                                "&fLeft click: &7back to previous page",
+                                "&fShift + left click: &7back to the main menu"),
                         (pl, s, is, action) -> {
                             SurvivalSlimefunGuide guide = new SurvivalSlimefunGuide(false, false);
                             GuideHistory history = prof.getGuideHistory();
@@ -558,7 +562,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                             ItemStack chanceOutput = originalOutput.clone();
                             if (chance < 100) {
                                 CommonUtils.addLore(
-                                        chanceOutput, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+                                        chanceOutput, true, CMIChatColor.translate("&b" + chance + "% &achance of &aproducing"));
                             }
 
                             if (chance > 0) {
@@ -584,7 +588,7 @@ public class SingleItemRecipeGuideListener implements Listener {
             }
 
             int seconds = recipe.getTicks() / 2;
-            String rawName = "&e制作时间: &b" + seconds + "&es";
+            String rawName = "&eProduction time: &b" + seconds + "&es";
 
             if (seconds > 60) {
                 rawName = rawName.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
@@ -606,7 +610,7 @@ public class SingleItemRecipeGuideListener implements Listener {
 
         private ItemStack tagOutputChance(ItemStack item, int chance) {
             item = item.clone();
-            CommonUtils.addLore(item, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+            CommonUtils.addLore(item, true, CMIChatColor.translate("&aThere's a &b " + chance + "% &aprobability of producing"));
             return item;
         }
     }
@@ -653,7 +657,7 @@ public class SingleItemRecipeGuideListener implements Listener {
                                     CommonUtils.addLore(
                                             chanceOutput,
                                             true,
-                                            CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+                                            CMIChatColor.translate("&aThere's a &b " + chance + "% &aprobability of producing"));
                                 }
 
                                 if (chance > 0) {
@@ -689,7 +693,7 @@ public class SingleItemRecipeGuideListener implements Listener {
 
         private ItemStack tagOutputChance(ItemStack item, int chance) {
             item = item.clone();
-            CommonUtils.addLore(item, true, CMIChatColor.translate("&a有&b " + chance + "% &a的概率产出"));
+            CommonUtils.addLore(item, true, CMIChatColor.translate("&aThere's a &b " + chance + "% &aprobability of producing"));
             return item;
         }
     }

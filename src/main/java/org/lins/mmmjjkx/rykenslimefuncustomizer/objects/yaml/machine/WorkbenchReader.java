@@ -90,13 +90,13 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
         String recipeType = section.getString("recipe_type", "NULL");
 
         Pair<ExceptionHandler.HandleResult, RecipeType> rt = ExceptionHandler.getRecipeType(
-                "在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "错误的配方类型" + recipeType + "!", recipeType);
+                "Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Invalid recipe type " + recipeType + "!", recipeType);
 
         if (rt.getFirstValue() == ExceptionHandler.HandleResult.FAILED) return null;
 
         CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(id));
         if (menu == null) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "未找到菜单");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Menu not found");
             return null;
         }
 
@@ -104,12 +104,12 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
         List<Integer> output = section.getIntegerList("output");
 
         if (input.isEmpty()) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "输入槽为空");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Input slots are empty");
             return null;
         }
 
         if (output.isEmpty()) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "输出槽为空");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Output slots are empty");
             return null;
         }
 
@@ -118,14 +118,14 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
         int capacity = section.getInt("capacity");
 
         if (capacity < 0) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "能源容量小于0");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Energy capacity cannot be negative");
             return null;
         }
 
         int energy = section.getInt("energyPerCraft");
 
         if (energy <= 0) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "合成一次的消耗能量未设置或小于等于0");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Energy consumption per craft must be greater than 0");
             return null;
         }
 
@@ -135,7 +135,7 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
             File file = new File(addon.getScriptsFolder(), script + ".js");
             if (!file.exists()) {
                 ExceptionHandler.handleWarning(
-                        "在附属" + addon.getAddonId() + "中加载机器" + s + "时遇到了问题: " + "找不到脚本文件 " + file.getName());
+                        "Failed to load machine " + s + " in addon " + addon.getAddonId() + ": Script file not found " + file.getName());
             } else {
                 eval = new JavaScriptEval(file, addon);
             }
@@ -143,12 +143,12 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
 
         int click = section.getInt("click", -1);
         if (click == -1) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "点击槽位未设置");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Click slot not configured");
             return null;
         }
 
         if (click < 0 || click > 53) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "点击槽位超出范围");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Click slot out of valid range (0-53)");
             return null;
         }
 
@@ -181,7 +181,7 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
         ItemStack stack = CommonUtils.readItem(item, false, addon);
 
         if (stack == null) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "时遇到了问题: " + "物品为空或格式错误");
+            ExceptionHandler.handleError("Failed to load workbench " + s + " in addon " + addon.getAddonId() + ": Item is null or has invalid format");
             return null;
         }
 
@@ -201,14 +201,14 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
             ConfigurationSection inputs = recipes.getConfigurationSection("input");
             if (inputs == null) {
                 ExceptionHandler.handleError(
-                        "在附属" + addon.getAddonId() + "中加载工作台" + s + "的工作配方" + key + "时遇到了问题: " + "没有输入物品");
+                        "Failed to load recipe " + key + " for workbench " + s + " in addon " + addon.getAddonId() + ": No input items specified");
                 continue;
             }
 
             ConfigurationSection outputs = recipes.getConfigurationSection("output");
             if (outputs == null) {
                 ExceptionHandler.handleError(
-                        "在附属" + addon.getAddonId() + "中加载工作台" + s + "的工作配方" + key + "时遇到了问题: " + "没有输出物品");
+                        "Failed to load recipe " + key + " for workbench " + s + " in addon " + addon.getAddonId() + ": No output items specified");
                 continue;
             }
 
@@ -225,8 +225,8 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
                     int chance = section1.getInt("chance", 100);
 
                     if (chance < 1) {
-                        ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载工作台" + s + "的工作配方" + key
-                                + "时遇到了问题: " + "概率不应该小于1，已转为1");
+                        ExceptionHandler.handleError("Failed to load recipe " + key + " for workbench " + s + " in addon " + addon.getAddonId()
+                                + ": Probability cannot be less than 1, setting to 1");
                         chance = 1;
                     }
 
@@ -260,13 +260,13 @@ public class WorkbenchReader extends YamlReader<CustomWorkbench> {
                 int slot = section1.getInt("slot", -1);
                 if (slot == -1) {
                     ExceptionHandler.handleError(
-                            "在附属" + addon.getAddonId() + "中加载工作台" + s + "的工作配方" + key + "时遇到了问题: " + "输入槽位不能为空");
+                            "Failed to load recipe " + key + " for workbench " + s + " in addon " + addon.getAddonId() + ": Input slot cannot be empty");
                     continue;
                 }
 
                 if (slot < 0 || slot > 53) {
                     ExceptionHandler.handleError(
-                            "在附属" + addon.getAddonId() + "中加载工作台" + s + "的工作配方" + key + "时遇到了问题: " + "输入槽位超出范围");
+                            "Failed to load recipe " + key + " for workbench " + s + " in addon " + addon.getAddonId() + ": Input slot out of valid range (0-53)");
                     continue;
                 }
 

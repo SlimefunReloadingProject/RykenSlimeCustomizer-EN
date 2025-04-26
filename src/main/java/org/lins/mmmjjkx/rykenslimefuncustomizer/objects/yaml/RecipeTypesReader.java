@@ -32,7 +32,7 @@ public class RecipeTypesReader extends YamlReader<RecipeType> {
         return new RecipeType(new NamespacedKey(RykenSlimefunCustomizer.INSTANCE, s.toLowerCase()), item);
     }
 
-    // 配方类型不需要预加载物品
+    // No preloadItems for RecipeType
     @Override
     public List<SlimefunItemStack> preloadItems(String s) {
         return List.of();
