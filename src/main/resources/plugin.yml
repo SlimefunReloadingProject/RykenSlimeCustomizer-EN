@@ -83,16 +83,16 @@ softdepend:
   - SupplementalServiceableness
   - GuizhanCraft
   - Magmanimous
-  - UltimateGenerators-RC27 # 不确定是否存在这个版本
-  - UltimateGenerators # 构建站有
-  - UltimateGenerators2 # 同上
+  - UltimateGenerators-RC27
+  - UltimateGenerators
+  - UltimateGenerators2
   - CrispyMachine
   - DimensionTraveler
   - Chocohills
-  - draconic # 疑似新版
-  - DracFun # 疑似旧版(?
-  - EzSFAddon # 疑似旧版
-  - EzTech # 疑似新版
+  - draconic
+  - DracFun
+  - EzSFAddon
+  - EzTech
   - RandomExpansion
   - ExLimus
   - MoneyAndThings

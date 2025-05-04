@@ -235,12 +235,12 @@ public class CommonUtils {
                         materialOptional = Optional.ofNullable(Material.matchMaterial(materialMappings.get(material)));
                         if (materialOptional.isPresent()) {
                             mat = materialOptional.get();
-                            ExceptionHandler.handleWarning("材料" + material + "已自动修复为" + mat);
+                            ExceptionHandler.handleWarning("Material " + material + " is already fixed to " + mat);
                         } else {
-                            ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取材料" + material + "，已转为石头");
+                            ExceptionHandler.handleError("Unable to find material " + material + " in " + addon.getAddonId() + " ; RSC already has turned the item into stone");
                         }
                     } else {
-                        ExceptionHandler.handleError("无法在附属" + addon.getAddonId() + "中读取材料" + material + "，已转为石头");
+                        ExceptionHandler.handleError("Unable to find material " + material + " in " + addon.getAddonId() + " ; RSC already has turned the item into stone");
                     }
                 }
 

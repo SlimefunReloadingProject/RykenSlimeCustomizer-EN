@@ -118,8 +118,7 @@ public class GeoResourceReader extends YamlReader<GEOResource> {
                         DropFromBlock.addDrop(material, new DropFromBlock.Drop(sfis.item(), chance, addon, amount, amount));
                     }
                 } else {
-                    ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载自然资源" + s + "时遇到了问题: " + "指定掉落方块材料类型"
-                            + dropMaterial + "不存在!");
+                    ExceptionHandler.handleError("Failed to load natural resource " + s + " in addon " + addon.getAddonId() + ": Specified drop block material type " + dropMaterial + " does not exist!");
                 }
             }
 

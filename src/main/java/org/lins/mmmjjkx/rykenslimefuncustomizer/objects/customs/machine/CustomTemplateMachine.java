@@ -149,7 +149,7 @@ public class CustomTemplateMachine extends AbstractEmptyMachine<CustomTemplateCr
 
                 if (recipe.getInput().length == 0) {
                     ItemStack templateItem = template.template().clone();
-                    CommonUtils.addLore(templateItem, true, "&d&l&o*模板物品不消耗*");
+                    CommonUtils.addLore(templateItem, true, "&d&l&o*Template item doesn't consume*");
                     displayRecipes.add(templateItem);
                 } else {
                     displayRecipes.add(SingleItemRecipeGuideListener.tagItemTemplateRecipe(
@@ -159,7 +159,7 @@ public class CustomTemplateMachine extends AbstractEmptyMachine<CustomTemplateCr
                 if (recipe.getOutput().length == 1) {
                     int seconds = recipe.getTicks() / 2;
                     ItemStack out = recipe.getOutput()[0].clone();
-                    String rawLore = "&e制作时间: &b" + seconds + "&es";
+                    String rawLore = "&eProduction time: &b" + seconds + "&es";
                     if (seconds > 60) {
                         rawLore = rawLore.concat("(" + CommonUtils.formatSeconds(seconds) + "&e)");
                     }
@@ -185,7 +185,7 @@ public class CustomTemplateMachine extends AbstractEmptyMachine<CustomTemplateCr
         if (inv != null) {
             ItemStack templateItem = inv.getItemInSlot(templateSlot);
 
-            // 断掉进度
+            // Stop the process
             if (templateItem == null || templateItem.getType() == Material.AIR) {
                 if (menu.getProgressSlot() >= 0) {
                     inv.replaceExistingItem(

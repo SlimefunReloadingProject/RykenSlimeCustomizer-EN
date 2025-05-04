@@ -71,25 +71,25 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
         String recipeType = section.getString("recipe_type", "NULL");
 
         Pair<ExceptionHandler.HandleResult, RecipeType> rt = ExceptionHandler.getRecipeType(
-                "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "错误的配方类型" + recipeType + "!", recipeType);
+                "Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Invalid recipe type " + recipeType + "!", recipeType);
 
         if (rt.getFirstValue() == ExceptionHandler.HandleResult.FAILED) return null;
 
         CustomMenu menu = CommonUtils.getIf(addon.getMenus(), m -> m.getID().equalsIgnoreCase(id));
         if (menu == null) {
-            ExceptionHandler.handleWarning("未找到菜单 " + id + " 使用默认菜单");
+            ExceptionHandler.handleWarning("Menu " + id + " not found, using default menu");
         }
 
         List<Integer> input = section.getIntegerList("input");
         List<Integer> output = section.getIntegerList("output");
 
         if (input.isEmpty()) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "输入槽为空");
+            ExceptionHandler.handleError("Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Input slots are empty");
             return null;
         }
 
         if (output.isEmpty()) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "输出槽为空");
+            ExceptionHandler.handleError("Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Output slots are empty");
             return null;
         }
 
@@ -98,7 +98,7 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
         int capacity = section.getInt("capacity");
 
         if (capacity < 0) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "能源容量小于0");
+            ExceptionHandler.handleError("Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Energy capacity cannot be negative");
             return null;
         }
 
@@ -106,14 +106,14 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
 
         if (energy <= 0) {
             ExceptionHandler.handleError(
-                    "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "合成一次的消耗能量未设置或小于等于0");
+                    "Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Energy consumption per craft must be greater than 0");
             return null;
         }
 
         int speed = section.getInt("speed");
 
         if (speed <= 0) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "合成速度未设置或小于等于0");
+            ExceptionHandler.handleError("Failed to load advanced recipe machine " + s + " in addon " + addon.getAddonId() + ": Crafting speed must be greater than 0");
             return null;
         }
 
@@ -147,7 +147,8 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
         ItemStack stack = CommonUtils.readItem(item, false, addon);
 
         if (stack == null) {
-            ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "时遇到了问题: " + "物品为空或格式错误");
+            ExceptionHandler.handleError("Failed to load linked recipe machine " + s + " in addon " + addon.getAddonId() +
+                    ": Item is null or has invalid format");
             return null;
         }
 
@@ -167,20 +168,20 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
             int seconds = recipes.getInt("seconds");
             if (seconds < 0) {
                 ExceptionHandler.handleError(
-                        "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key + "时遇到了问题: " + "间隔时间未设置或不能小于0");
+                        "Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId() + ": Processing interval cannot be negative or unset");
                 continue;
             }
             ConfigurationSection inputs = recipes.getConfigurationSection("input");
             if (inputs == null) {
                 ExceptionHandler.handleError(
-                        "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key + "时遇到了问题: " + "没有输入物品");
+                        "Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId() + ": No input items specified");
                 continue;
             }
 
             ConfigurationSection outputs = recipes.getConfigurationSection("output");
             if (outputs == null) {
                 ExceptionHandler.handleError(
-                        "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key + "时遇到了问题: " + "没有输出物品");
+                        "Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId() + ": No output items specified");
                 continue;
             }
 
@@ -197,8 +198,8 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
                     int chance = section1.getInt("chance", 100);
 
                     if (chance < 1) {
-                        ExceptionHandler.handleError("在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key
-                                + "时遇到了问题: " + "概率不应该小于1，已转为1");
+                        ExceptionHandler.handleError("Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId()
+                                + ": Drop chance cannot be less than 1 (auto-corrected to 1)");
                         chance = 1;
                     }
 
@@ -232,13 +233,15 @@ public class LinkedRecipeMachineReader extends YamlReader<CustomLinkedRecipeMach
                 int slot = section1.getInt("slot", -1);
                 if (slot == -1) {
                     ExceptionHandler.handleError(
-                            "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key + "时遇到了问题: " + "输入槽位不能为空");
+                            "Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId() +
+                                    ": Input slot must be specified (cannot be empty)");
                     continue;
                 }
 
                 if (slot < 0 || slot > 53) {
                     ExceptionHandler.handleError(
-                            "在附属" + addon.getAddonId() + "中加载强配方机器" + s + "的工作配方" + key + "时遇到了问题: " + "输入槽位超出范围");
+                            "Failed to load recipe " + key + " for linked recipe machine " + s + " in addon " + addon.getAddonId() +
+                                    ": Input slot " + slot + " is out of valid range (0-53)");
                     continue;
                 }
 

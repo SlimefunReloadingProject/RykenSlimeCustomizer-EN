@@ -48,7 +48,7 @@ public class ItemGroupButton extends SubItemGroup {
         if (actions != null) {
             for (String action : actions) {
                 if (action.split(" ").length < 2) {
-                    ExceptionHandler.handleWarning("在" + getKey().getKey() + "物品组按钮中发现未知的操作格式: " + action);
+                    ExceptionHandler.handleWarning("Unknown action format found in item group button: " + action);
                     continue;
                 }
 
@@ -56,7 +56,7 @@ public class ItemGroupButton extends SubItemGroup {
                 String content = action.split(" ")[1];
                 switch (type) {
                     case "link" -> {
-                        p.sendMessage(CMIChatColor.translate("&e单击此处: "));
+                        p.sendMessage(CMIChatColor.translate("&eClick here: "));
                         TextComponent link = new TextComponent(content);
                         link.setColor(ChatColor.GRAY);
 
@@ -68,7 +68,7 @@ public class ItemGroupButton extends SubItemGroup {
                     case "console" -> {
                         if (CommandSafe.isBadCommand(content)) {
                             ExceptionHandler.handleDanger(
-                                    "在" + getKey().getKey() + "物品组按钮中发现执行服务器高危操作,请联系附属对应作者进行处理！！！");
+                                    "High-risk server operation detected in item group button. Please contact the author of the corresponding addon for processing!!!");
                             continue;
                         }
                         content = action.replace(type + " ", "");
@@ -77,7 +77,7 @@ public class ItemGroupButton extends SubItemGroup {
                     case "open_itemgroup" -> {
                         if (content.split(":").length < 2) {
                             ExceptionHandler.handleWarning(
-                                    "在" + getKey().getKey() + "物品组按钮中发现未知的物品组 NamespacedKey: " + content);
+                                    "Unknown NamespacedKey found in item group button: " + content);
                             continue;
                         }
                         String namespace = content.split(":")[0];
@@ -92,7 +92,7 @@ public class ItemGroupButton extends SubItemGroup {
                         Optional<PlayerProfile> Oprofile = PlayerProfile.find(p);
                         if (Oprofile.isEmpty()) {
                             ExceptionHandler.handleWarning(
-                                    "在" + getKey().getKey() + "物品组按钮中发现无法获取 PlayerProfile: " + p.getName());
+                                    "Unable to retrieve PlayerProfile in item group button: " + p.getName());
                             continue;
                         }
                         PlayerProfile profile = Oprofile.get();
@@ -109,13 +109,13 @@ public class ItemGroupButton extends SubItemGroup {
                         Optional<PlayerProfile> Oprofile = PlayerProfile.find(p);
                         if (Oprofile.isEmpty()) {
                             ExceptionHandler.handleWarning(
-                                    "在" + getKey().getKey() + "物品组按钮中发现无法获取 PlayerProfile: " + p.getName());
+                                    "Unable to retrieve PlayerProfile in item group button: " + p.getName());
                             continue;
                         }
                         SlimefunItem item = SlimefunItem.getById(content);
                         if (item == null) {
                             ExceptionHandler.handleWarning(
-                                    "在" + getKey().getKey() + "物品组按钮中发现未知的 SlimefunItem ID: " + content);
+                                    "Unknown SlimefunItem ID found in item group button: " + content);
                             continue;
                         }
                         PlayerProfile profile = Oprofile.get();
@@ -128,7 +128,7 @@ public class ItemGroupButton extends SubItemGroup {
                         File file = new File(addon.getScriptsFolder(), content + ".js");
                         if (!file.exists()) {
                             ExceptionHandler.handleWarning(
-                                    "在" + getKey().getKey() + "物品组按钮中发现执行脚本时遇到了问题: " + "找不到脚本文件 " + file.getName());
+                                    "Script execution issue found in item group button: File not found " + file.getName());
                         } else {
                             eval = new JavaScriptEval(file, addon);
                         }
@@ -137,7 +137,7 @@ public class ItemGroupButton extends SubItemGroup {
                             eval.evalFunction("onButtonGroupClick", p, slot, clickedItem, clickAction, mode);
                         }
                     }
-                    default -> ExceptionHandler.handleWarning("在" + getKey().getKey() + "物品组按钮中发现未知的操作类型: " + action);
+                    default -> ExceptionHandler.handleWarning("Unknown action type found in item group button: " + action);
                 }
             }
         }
